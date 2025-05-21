@@ -1,0 +1,23 @@
+# === DEPENDENCIES ===
+node_modules/
+
+# === PRODUCTION BUILDS ===
+build/
+dist/
+
+# === TEST OUTPUT ===
+coverage/
+
+# === ENV FILES ===
+.env
+.env.local
+.env.*.local
+
+# === LOGS ===
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# === SYSTEM FILES ===
+.DS_Store
+Thumbs.db

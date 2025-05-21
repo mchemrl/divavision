@@ -1,0 +1,200 @@
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.login-container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
+.side-panel {
+  flex: 1;
+  background: linear-gradient(90deg, #E7D9FB 0%, #BFA2F7 50%, #FBD4EB 100%);
+  padding: 5% 3%;
+  text-align: center;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.illustration-wrapper {
+  width: 300px;
+  height: 300px;
+  background: rgba(255,255,255,0.5);
+  box-shadow: 0 1.5px 4px rgba(100,100,150,0.06), 0 4px 32px rgba(191,162,247,0.15);
+  border-radius: 24px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.illustration-img {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+}
+
+.subtitle {
+  font-family: 'Nunito', sans-serif;
+  font-size: 2rem;
+  color: #A58ED8;
+  margin-bottom: 0.5rem;
+}
+
+.tagline {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.125rem;
+  color: #A58ED8;
+}
+
+.form-panel {
+  flex: 1;
+  background: #F5F4FA;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  overflow: auto;
+}
+.header{
+  text-align: center;
+}
+.header h1 {
+  font-family: 'Nunito', sans-serif;
+  font-size: 2rem;
+  color: #A58ED8;
+  margin: 0 0 0.5rem;
+}
+
+.helper-text {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  color: #BFA2F7;
+  margin-bottom: 2rem;
+}
+
+.login-form {
+  width: 90%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  color: #6E6E7A;
+  margin-bottom: 0.5rem;
+}
+
+.form-group input {
+  width: 100%;
+  height: 3rem;
+  padding: 0 1rem;
+  background: #FFFFFF;
+  border-radius: 12px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  color: #6E6E7A;
+  border: 1px solid #E0E0E0;
+}
+
+.primary-btn {
+  width: 100%;
+  height: 3rem;
+  background: #BFA2F7;
+  box-shadow: 0 0 6px #BFA2F7;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  color: #FFFFFF;
+  cursor: pointer;
+}
+
+.footer-links {
+  width: 90%;
+  max-width: 360px;
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.forgot {
+  align-self: flex-end;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.875rem;
+  color: #A58ED8;
+  text-decoration: none;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.divider hr {
+  flex: 1;
+  border: none;
+  height: 1px;
+  background: #CED4DA;
+}
+
+.divider span {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.875rem;
+  color: #E7D9FB;
+}
+
+.social-btn {
+  width: 100%;
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: #FFFFFF;
+  border: 1px solid;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  color: #A58ED8;
+  cursor: pointer;
+}
+
+.social-btn.google { border-color: #D4EBFB; }
+.social-btn.spotify { border-color: #D4FBEA; }
+
+.signup-link {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+}
+
+.signup-link span {
+  color: #6E6E7A;
+}
+
+.signup-link a {
+  color: #BFA2F7;
+  text-decoration: none;
+}
