@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import illustration from '../assets/login_img.png';
 import './LoginPage.css';
 
-export default function LoginPage() {
+export default function SignUpPage() {
   const navigate = useNavigate();
-  const handleLoginClick = (e) => {
+  const handleSignUp = (e) => {
     e.preventDefault();
     navigate('/discover');
   };
@@ -16,35 +16,38 @@ export default function LoginPage() {
         <div className="illustration-wrapper">
           <img src={illustration} alt="Illustration" className="illustration-img" />
         </div>
-        <h2 className="subtitle">Welcome to Divavision</h2>
+        <h2 className="subtitle">Join Divavision</h2>
         <p className="tagline">Your cozy cinema universe awaits 🎬</p>
       </div>
 
       <div className="form-panel">
         <div className="header">
-          <h1>Welcome Back 🎞️</h1>
-          <p className="helper-text">Log in to your Divavision</p>
+          <h1>Create Account 🎬</h1>
+          <p className="helper-text">Sign up and start vibing</p>
         </div>
-        <form className="login-form" onSubmit={handleLoginClick}>
+        <form className="login-form" onSubmit={handleSignUp}>
           <div className="form-group">
-            <label htmlFor="email">Email or Username</label>
-            <input id="email" type="text" placeholder="youremail@divavision.com" />
+            <label htmlFor="username">Username</label>
+            <input id="username" type="text" placeholder="cinemafan99" />
+          </div>
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input id="email" type="email" placeholder="you@example.com" />
           </div>
           <div className="form-group">
             <label htmlFor="password">Password</label>
             <input id="password" type="password" placeholder="••••••••" />
           </div>
-          <button type="submit" className="primary-btn">Log In</button>
+          <button type="submit" className="primary-btn">Sign Up</button>
         </form>
         <div className="footer-links">
-          <a href="#" className="forgot">Forgot password?</a>
           <div className="divider"><hr /><span>or</span><hr /></div>
           <button className="social-btn google">
             <i className="icon-google" /> Continue with Google
           </button>
           <div className="signup-link">
-            <span>Don't have an account?</span>
-            <a href="/signup">Sign Up →</a>
+            <span>Already have an account?</span>
+            <a href="/login">Log In →</a>
           </div>
         </div>
       </div>

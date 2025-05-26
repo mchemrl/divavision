@@ -41,6 +41,7 @@ html, body, #root {
   max-width: 90%;
   max-height: 90%;
   object-fit: contain;
+  opacity: 0.5;
 }
 
 .subtitle {
