@@ -1,5 +1,7 @@
 from werkzeug.security import generate_password_hash
 from server.db import get_connection
+from ..services.list_service import create_list
+
 
 def fetch_user_by_id(user_id):
     with get_connection() as conn:
@@ -56,3 +58,7 @@ def create_user_if_not_exists(username, email, profile_pic_url=None):
             user_id = cur.fetchone()[0]
             conn.commit()
             return user_id
+
+def create_basic_lists(user_id):
+    create_list(user_id, "Favourites", "Your favourite movies list", is_default=True)
+    create_list(user_id, "Watched", "Movies you have watched", is_default=True)

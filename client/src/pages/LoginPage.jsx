@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import illustration from '../assets/login_img.png';
+import illustration from '../assets/trolls/jumping_troll.gif';
 import './LoginPage.css';
 
 export default function LoginPage() {
@@ -16,13 +16,11 @@ export default function LoginPage() {
         <div className="illustration-wrapper">
           <img src={illustration} alt="Illustration" className="illustration-img" />
         </div>
-        <h2 className="subtitle">Welcome to Divavision</h2>
-        <p className="tagline">Your cozy cinema universe awaits 🎬</p>
       </div>
 
       <div className="form-panel">
         <div className="header">
-          <h1>Welcome Back 🎞️</h1>
+          <h1>Welcome Back</h1>
           <p className="helper-text">Log in to your Divavision</p>
         </div>
         <form className="login-form" onSubmit={handleLoginClick}>
@@ -37,7 +35,6 @@ export default function LoginPage() {
           <button type="submit" className="primary-btn">Log In</button>
         </form>
         <div className="footer-links">
-          <a href="#" className="forgot">Forgot password?</a>
           <div className="divider"><hr /><span>or</span><hr /></div>
           <button className="social-btn google">
             <i className="icon-google" /> Continue with Google

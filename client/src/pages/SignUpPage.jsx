@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import illustration from '../assets/login_img.png';
+import illustration from '../assets/trolls/jumping_troll.gif';
 import './LoginPage.css';
 
 export default function SignUpPage() {
@@ -16,13 +16,11 @@ export default function SignUpPage() {
         <div className="illustration-wrapper">
           <img src={illustration} alt="Illustration" className="illustration-img" />
         </div>
-        <h2 className="subtitle">Join Divavision</h2>
-        <p className="tagline">Your cozy cinema universe awaits 🎬</p>
       </div>
 
       <div className="form-panel">
         <div className="header">
-          <h1>Create Account 🎬</h1>
+          <h1>Create Account</h1>
           <p className="helper-text">Sign up and start vibing</p>
         </div>
         <form className="login-form" onSubmit={handleSignUp}>

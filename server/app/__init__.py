@@ -19,6 +19,7 @@ def create_app():
     app.config['SESSION_COOKIE_PATH'] = '/'
 
     init_oauth(app)
+    print("Final OAuth clients: %r", list(oauth._clients.keys()))
 
     from server.routes import routes
     app.register_blueprint(routes)

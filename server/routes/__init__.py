@@ -1,11 +1,12 @@
 from flask import Blueprint
 from .auth import auth
 from .profile import profile
-from .test import test
+from .list import list
+from .movie import movie
 
 routes = Blueprint('routes', __name__, url_prefix='/')
 
 routes.register_blueprint(auth, url_prefix='/auth')
 routes.register_blueprint(profile, url_prefix='/profile')
-routes.register_blueprint(test, url_prefix='/test')
-
+routes.register_blueprint(list, url_prefix='/list')
+routes.register_blueprint(movie, url_prefix='/movie')

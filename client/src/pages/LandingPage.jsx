@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LandingPage.css';
 
-import PhoneMockup from '../assets/phone_mockup.png';
+import SleepingTroll from '../assets/trolls/sleeping_troll.gif';
 import Footer from '../components/Footer';
 
   export default function LandingPage() {
@@ -57,7 +57,7 @@ import Footer from '../components/Footer';
       </section>
 
       <section className="vibe-section">
-        <img src={PhoneMockup} alt="phone mockup" className="vibe-image" />
+        <img src={SleepingTroll} alt="sleeping troll" className="vibe-image" />
         <div className="vibe-text">
           <h2>All your movie vibes, in one place</h2>
           <ul>

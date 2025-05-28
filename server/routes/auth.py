@@ -1,10 +1,9 @@
 from flask import Blueprint, request, session, g, jsonify, url_for
-from psycopg2 import IntegrityError
 from werkzeug.security import check_password_hash
-from ..services.auth_service import fetch_user_by_id, fetch_user_by_identifier, create_user
+from ..services.auth_service import fetch_user_by_id, fetch_user_by_identifier, create_user, create_user_if_not_exists, create_basic_lists
 from server.app.oauth import oauth
-from ..services.auth_service import create_user_if_not_exists
 from ..utils.email_verification import generate_verification_code, send_verification_email, store_verification_code, verification_codes
+
 
 auth = Blueprint('auth', __name__)
 
@@ -44,6 +43,7 @@ def verify_email_code():
         return jsonify({'error': 'invalid verification code'}), 400
 
     user_id = create_user(stored['username'], email, stored['password'])
+    create_basic_lists(user_id)
     verification_codes.pop(email, None)
     return jsonify({'message': 'email verified, user registered', 'user_id': user_id}), 201
 
@@ -79,7 +79,6 @@ def load_logged_in_user():
     else:
         g.user = fetch_user_by_id(user_id)
 
-
 @auth.route('/logout', methods=['POST'])
 def logout():
     session.clear()
@@ -100,6 +99,7 @@ def authorize_google():
     profile_pic_url = user_info.get('picture')
 
     user_id = create_user_if_not_exists(username, email, profile_pic_url)
+    create_basic_lists(user_id)
 
     session.clear()
     session['user_id'] = user_id

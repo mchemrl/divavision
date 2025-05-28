@@ -41,20 +41,6 @@ html, body, #root {
   max-width: 90%;
   max-height: 90%;
   object-fit: contain;
-  opacity: 0.5;
-}
-
-.subtitle {
-  font-family: 'Nunito', sans-serif;
-  font-size: 2rem;
-  color: #A58ED8;
-  margin-bottom: 0.5rem;
-}
-
-.tagline {
-  font-family: 'Nunito', sans-serif;
-  font-size: 1.125rem;
-  color: #A58ED8;
 }
 
 .form-panel {
@@ -73,7 +59,7 @@ html, body, #root {
 .header h1 {
   font-family: 'Nunito', sans-serif;
   font-size: 2rem;
-  color: #A58ED8;
+  color: #4C1D95;
   margin: 0 0 0.5rem;
 }
 
