@@ -14,7 +14,7 @@ def send_verification_email(email, code):
     smtp_port = current_app.config['SMTP_PORT']
     smtp_user = current_app.config['SMTP_USER']
     smtp_password = current_app.config['SMTP_PASSWORD']
-    sender_email = current_app.config.get('SENDER_EMAIL', smtp_user)
+    sender_email = current_app.config.get('SENDER_EMAIL')
 
     message = MIMEMultipart("alternative")
     message["Subject"] = "Verify Your Email"

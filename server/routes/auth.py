@@ -4,7 +4,7 @@ from werkzeug.security import check_password_hash
 from ..services.auth_service import fetch_user_by_id, fetch_user_by_identifier, create_user
 from server.app.oauth import oauth
 from ..services.auth_service import create_user_if_not_exists
-from ..utils.email_verification import generate_verification_code, send_verification_email, store_verification_code
+from ..utils.email_verification import generate_verification_code, send_verification_email, store_verification_code, verification_codes
 
 auth = Blueprint('auth', __name__)
 
@@ -18,15 +18,35 @@ def register():
     if not username or not email or not password:
         return jsonify({'error': 'username, email and password are required'}), 400
 
-    try:
-        user_id = create_user(username, email, password)
-        code = generate_verification_code()
-        store_verification_code(email, code)
-        send_verification_email(email, code)
-    except IntegrityError:
+    if fetch_user_by_identifier(email) or fetch_user_by_identifier(username):
         return jsonify({'error': 'username or email already exists'}), 400
 
-    return jsonify({'message': 'user created successfully', 'user_id': user_id}), 201
+    code = generate_verification_code()
+    store_verification_code(email, {
+        'code': code,
+        'username': username,
+        'password': password,
+    })
+    send_verification_email(email,code)
+
+    return jsonify({'message': 'verification code sent'}), 200
+
+@auth.route('/verify', methods=['POST'])
+def verify_email_code():
+    data = request.json
+    code = data.get('code')
+    email = data.get('email')
+
+    stored = verification_codes.get(email)
+    if not stored:
+        return jsonify({'error': 'no verification pending for this email'}), 400
+    if stored['code'] != code:
+        return jsonify({'error': 'invalid verification code'}), 400
+
+    user_id = create_user(stored['username'], email, stored['password'])
+    verification_codes.pop(email, None)
+    return jsonify({'message': 'email verified, user registered', 'user_id': user_id}), 201
+
 
 @auth.route('/login', methods=['POST'])
 def login():
@@ -43,7 +63,7 @@ def login():
         return jsonify({'error': 'password is required'}), 400
 
     user = fetch_user_by_identifier(identifier)
-    if user is None or not check_password_hash(user[3], password):
+    if user is None or not check_password_hash(user[2], password):
         return jsonify({'error': 'incorrect credentials'}), 400
 
     session.clear()
@@ -67,9 +87,7 @@ def logout():
 
 @auth.route('/login/google')
 def login_with_google():
-    print("Redirecting to Google OAuth...")
     redirect_uri = url_for('routes.auth.authorize_google', _external=True)
-    print("Redirect URI:", redirect_uri)
     return oauth.google.authorize_redirect(redirect_uri)
 
 @auth.route('/login/google/callback')
