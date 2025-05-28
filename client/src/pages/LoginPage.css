@@ -1,4 +1,6 @@
-html, body, #root {
+html,
+body,
+#root {
   width: 100%;
   height: 100%;
   margin: 0;
@@ -14,7 +16,7 @@ html, body, #root {
 
 .side-panel {
   flex: 1;
-  background: linear-gradient(90deg, #E7D9FB 0%, #BFA2F7 50%, #FBD4EB 100%);
+  background: linear-gradient(90deg, #e7d9fb 0%, #bfa2f7 50%, #fbd4eb 100%);
   padding: 5% 3%;
   text-align: center;
   overflow: auto;
@@ -27,14 +29,21 @@ html, body, #root {
 .illustration-wrapper {
   width: 300px;
   height: 300px;
-  background: rgba(255,255,255,0.5);
-  box-shadow: 0 1.5px 4px rgba(100,100,150,0.06), 0 4px 32px rgba(191,162,247,0.15);
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 1.5px 4px rgba(100, 100, 150, 0.06),
+    0 4px 32px rgba(191, 162, 247, 0.15);
   border-radius: 24px;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 1.5rem;
+}
+.error-text {
+  color: #ff4d4f;
+  font-size: 14px;
+  margin: 10px 0;
+  text-align: center;
 }
 
 .illustration-img {
@@ -45,21 +54,21 @@ html, body, #root {
 }
 
 .subtitle {
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 2rem;
-  color: #A58ED8;
+  color: #a58ed8;
   margin-bottom: 0.5rem;
 }
 
 .tagline {
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 1.125rem;
-  color: #A58ED8;
+  color: #a58ed8;
 }
 
 .form-panel {
   flex: 1;
-  background: #F5F4FA;
+  background: #f5f4fa;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -67,20 +76,20 @@ html, body, #root {
   padding: 2rem;
   overflow: auto;
 }
-.header{
+.header {
   text-align: center;
 }
 .header h1 {
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 2rem;
-  color: #A58ED8;
+  color: #a58ed8;
   margin: 0 0 0.5rem;
 }
 
 .helper-text {
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 1rem;
-  color: #BFA2F7;
+  color: #bfa2f7;
   margin-bottom: 2rem;
 }
 
@@ -94,9 +103,9 @@ html, body, #root {
 
 .form-group label {
   display: block;
-  font-family: 'Outfit', sans-serif;
+  font-family: "Outfit", sans-serif;
   font-size: 1rem;
-  color: #6E6E7A;
+  color: #6e6e7a;
   margin-bottom: 0.5rem;
 }
 
@@ -104,24 +113,24 @@ html, body, #root {
   width: 100%;
   height: 3rem;
   padding: 0 1rem;
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 12px;
-  font-family: 'Outfit', sans-serif;
+  font-family: "Outfit", sans-serif;
   font-size: 1rem;
-  color: #6E6E7A;
-  border: 1px solid #E0E0E0;
+  color: #6e6e7a;
+  border: 1px solid #e0e0e0;
 }
 
 .primary-btn {
   width: 100%;
   height: 3rem;
-  background: #BFA2F7;
-  box-shadow: 0 0 6px #BFA2F7;
+  background: #bfa2f7;
+  box-shadow: 0 0 6px #bfa2f7;
   border: none;
   border-radius: 12px;
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 1rem;
-  color: #FFFFFF;
+  color: #ffffff;
   cursor: pointer;
 }
 
@@ -137,9 +146,9 @@ html, body, #root {
 
 .forgot {
   align-self: flex-end;
-  font-family: 'Outfit', sans-serif;
+  font-family: "Outfit", sans-serif;
   font-size: 0.875rem;
-  color: #A58ED8;
+  color: #a58ed8;
   text-decoration: none;
 }
 
@@ -154,13 +163,13 @@ html, body, #root {
   flex: 1;
   border: none;
   height: 1px;
-  background: #CED4DA;
+  background: #ced4da;
 }
 
 .divider span {
-  font-family: 'Outfit', sans-serif;
+  font-family: "Outfit", sans-serif;
   font-size: 0.875rem;
-  color: #E7D9FB;
+  color: #e7d9fb;
 }
 
 .social-btn {
@@ -170,32 +179,36 @@ html, body, #root {
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  background: #FFFFFF;
+  background: #ffffff;
   border: 1px solid;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  font-family: 'Outfit', sans-serif;
+  font-family: "Outfit", sans-serif;
   font-size: 1rem;
-  color: #A58ED8;
+  color: #a58ed8;
   cursor: pointer;
 }
 
-.social-btn.google { border-color: #D4EBFB; }
-.social-btn.spotify { border-color: #D4FBEA; }
+.social-btn.google {
+  border-color: #d4ebfb;
+}
+.social-btn.spotify {
+  border-color: #d4fbea;
+}
 
 .signup-link {
   display: flex;
   gap: 0.5rem;
   align-items: center;
-  font-family: 'Outfit', sans-serif;
+  font-family: "Outfit", sans-serif;
   font-size: 1rem;
 }
 
 .signup-link span {
-  color: #6E6E7A;
+  color: #6e6e7a;
 }
 
 .signup-link a {
-  color: #BFA2F7;
+  color: #bfa2f7;
   text-decoration: none;
 }
