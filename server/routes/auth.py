@@ -103,4 +103,5 @@ def authorize_google():
 
     session.clear()
     session['user_id'] = user_id
-    return jsonify({'message': 'google login successful', 'user_id': user_id, 'username': username})
+
+    return redirect(f"{FRONTEND_URL}/discover?user_id={user_id}&username={username}")
