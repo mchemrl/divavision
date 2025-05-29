@@ -1,15 +1,99 @@
+import json
+import psycopg2
+
 from ..db import get_connection
 
-def create_list(user_id, title, description=None, picture_url=None, is_default = None):
+def create_list(user_id, title, description = None, picture_url = None, is_default = False):
+    print(user_id, title, description, picture_url, is_default)
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                insert into lists (user_id, title, description, picture_url)
-                values (%s, %s, %s, %s)
+                insert into lists (user_id, title, description, picture_url, is_default)
+                values (%s, %s, %s, %s, %s)
                 returning list_id, user_id, title, description, picture_url, created_at, is_default
-            """, (user_id, title, description, picture_url  ))
+            """, (user_id, title, description, picture_url, is_default))
+
             row = cur.fetchone()
+            list_id = row[0]
+
+            if not is_default:
+                cur.execute("""
+                insert into feed_events (user_id, event_type, target_id, event_data)
+                values (%s, %s, %s, %s)
+                """, (user_id, f"created list {title}", list_id, json.dumps({'user_id': user_id})))
+
             conn.commit()
+
+def delete_list(user_id, list_id):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                delete from lists
+                where list_id = %s and user_id = %s
+                returning list_id
+            """, (list_id, user_id))
+            conn.commit()
+
+def change_list(list_id, user_id, title, description=None, picture_url=None):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                update lists
+                set title = %s,
+                    description = %s,
+                    picture_url = %s
+                where list_id = %s and user_id = %s
+                returning list_id, user_id, title, description, picture_url, created_at, is_default
+            """, (title, description, picture_url, list_id, user_id))
+            conn.commit()
+
+
+def fetch_lists(user_id=None, search=None, sort_by=None, order=None):
+    sort_by = (sort_by or 'created_at').lower()
+    order = (order or 'desc').lower()
+
+    if sort_by not in ['title', 'created_at']:
+        sort_by = 'created_at'
+    if order not in ['asc', 'desc']:
+        order = 'desc'
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            base_query = f"""
+                    select list_id, user_id, title, description, picture_url, created_at
+                    from lists
+                    where (%s is null or user_id = %s)
+                      and (%s is null or lower(title) like lower(concat('%%', %s, '%%')))
+                      and is_default = False
+                    order by {sort_by} {order.upper()}
+                """
+
+            cur.execute(base_query, (user_id, user_id, search, search))
+            rows = cur.fetchall()
+
+            return [
+                {
+                    'list_id': row[0],
+                    'user_id': row[1],
+                    'title': row[2],
+                    'description': row[3],
+                    'picture_url': row[4],
+                    'created_at': row[5].isoformat()
+                }
+                for row in rows
+            ]
+
+def fetch_list_by_id(list_id):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                   select list_id, user_id, title, description, picture_url, created_at
+                   from lists
+                   where list_id = %s
+               """, (list_id,))
+            row = cur.fetchone()
+            if not row:
+                return None
             return {
                 'list_id': row[0],
                 'user_id': row[1],
@@ -18,3 +102,44 @@ def create_list(user_id, title, description=None, picture_url=None, is_default =
                 'picture_url': row[4],
                 'created_at': row[5].isoformat()
             }
+
+def delete_movie(list_id, movie_id):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                   delete from list_items 
+                   where list_id = %s and movie_id = %s
+                   returning list_item_id
+               """, (list_id, movie_id))
+            conn.commit()
+
+def add_movie(list_id, movie_id):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            try:
+                cur.execute("""
+                       insert into list_items (list_id, movie_id)
+                       values (%s, %s)
+                       returning list_item_id
+                   """, (list_id, movie_id))
+                conn.commit()
+                list_item_id = cur.fetchone()[0]
+
+                cur.execute("""
+                            select user_id, title, is_default from lists
+                            where list_id = %s
+                               """, (list_id,))
+                list_data = cur.fetchone()
+                user_id, title, is_default = list_data
+
+                if is_default and title in ('Favourites', 'Watched'):
+                    cur.execute("""
+                                    insert into feed_events (user_id, event_type, target_id, event_data)
+                                    values (%s, %s, %s, %s)
+                                   """, (user_id,
+                        f'added to {title}', list_item_id, json.dumps({ 'user_id': user_id, 'movie_id': movie_id })
+                    ))
+
+                conn.commit()
+            except psycopg2.errors.UniqueViolation:
+                conn.rollback()

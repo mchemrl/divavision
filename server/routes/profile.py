@@ -1,6 +1,6 @@
 from flask import Blueprint, session, jsonify, request
 from ..utils.decorators import login_required
-from ..services.profile_service import (fetch_user_by_id, update_user, fetch_user_lists_by_filter,
+from ..services.profile_service import (fetch_user_by_id, change_user, fetch_user_lists_by_filter,
                                         follow_user, unfollow_user, fetch_stats,
                                         fetch_following, fetch_followers, fetch_feed)
 
@@ -27,7 +27,7 @@ def update_my_profile():
     data = request.json
     if not data:
         return jsonify({'error': 'no data provided'}), 404
-    updated_profile = update_user(user_id, data)
+    updated_profile = change_user(user_id, data)
     if not updated_profile:
         return jsonify({'error': 'update failed'}), 404
     return jsonify({'message': 'profile updated successfully', 'profile': updated_profile}), 200

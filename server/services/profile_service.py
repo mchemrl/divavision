@@ -21,7 +21,7 @@ def fetch_user_by_id(user_id):
         'tagline': row[4]
     }
 
-def update_user(user_id, updated_profile):
+def change_user(user_id, updated_profile):
     with get_connection() as conn:
         with conn.cursor() as cur:
             fields = list()
@@ -103,7 +103,7 @@ def follow_user(follower_id, followed_id):
             cur.execute("""
                             insert into feed_events (user_id, event_type, target_id, event_data)
                             values (%s, %s, %s, %s)
-                        """, (follower_id, 'follow', followed_id, json.dumps({followed_id: follower_id})))
+                        """, (follower_id, 'followed', followed_id, json.dumps({"follower": follower_id, "followed": followed_id})))
             conn.commit()
 
 def unfollow_user(follower_id, followed_id):
@@ -210,10 +210,10 @@ def fetch_feed(user_id):
                 return []
 
             cur.execute("""
-                SELECT event_id, user_id, event_type, target_id, event_data, created_at
-                FROM feed_events
-                WHERE user_id = ANY(%s)
-                ORDER BY created_at DESC
+                select event_id, user_id, event_type, target_id, event_data, created_at
+                from feed_events
+                where user_id = any(%s)
+                order by created_at desc
                 LIMIT 50
             """, (followed_ids,))
             events = cur.fetchall()
