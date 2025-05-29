@@ -17,7 +17,7 @@ def fetch_user_by_id(user_id):
         'username': row[0],
         'email': row[1],
         'profile_pic_url': row[2],
-        'start_date': row[3].isoformat(),
+        'start_date': row[3].strftime("%Y-%m-%d"),
         'tagline': row[4]
     }
 
@@ -86,7 +86,7 @@ def fetch_user_lists_by_filter(user_id, is_default=None, title=None, search_titl
             'title': r[1],
             'description': r[2],
             'picture_url': r[3],
-            'created_at': r[4].isoformat()
+            'created_at': r[4].strftime("%Y-%m-%d")
         }
         for r in rows
     ]
@@ -224,5 +224,5 @@ def fetch_feed(user_id):
                 'event_type': row[2],
                 'target_id': row[3],
                 'event_data': row[4],
-                'created_at': row[5].isoformat()
+                'created_at': row[5].strftime("%Y-%m-%d")
             } for row in events]
