@@ -6,3 +6,7 @@ node_modules/
 Thumbs.db
 server/venv/
 server/app/__pycache__/
+server/__pycache__
+server/routes/__pycache__
+server/services/__pycache__
+server/utils/__pycache__
