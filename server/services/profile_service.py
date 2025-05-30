@@ -1,5 +1,5 @@
 import json
-
+from ..services.achievement_service import award_badge_if_earned
 from ..db import get_connection
 
 def fetch_user_by_id(user_id):
@@ -104,6 +104,7 @@ def follow_user(follower_id, followed_id):
                             insert into feed_events (user_id, event_type, target_id, event_data)
                             values (%s, %s, %s, %s)
                         """, (follower_id, 'followed', followed_id, json.dumps({"follower": follower_id, "followed": followed_id})))
+            award_badge_if_earned(follower_id)
             conn.commit()
 
 def unfollow_user(follower_id, followed_id):

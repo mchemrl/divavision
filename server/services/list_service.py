@@ -1,6 +1,6 @@
 import json
 import psycopg2
-
+from ..services.achievement_service import award_badge_if_earned
 from ..db import get_connection
 
 def create_list(user_id, title, description = None, picture_url = None, is_default = False):
@@ -22,6 +22,7 @@ def create_list(user_id, title, description = None, picture_url = None, is_defau
                 values (%s, %s, %s, %s)
                 """, (user_id, f"created list {title}", list_id, json.dumps({'user_id': user_id})))
 
+            award_badge_if_earned(user_id)
             conn.commit()
 
 def delete_list(user_id, list_id):

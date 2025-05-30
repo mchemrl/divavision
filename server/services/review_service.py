@@ -1,5 +1,5 @@
 import json
-
+from ..services.achievement_service import award_badge_if_earned
 from ..db import get_connection
 
 def create_review(user_id, movie_id, rating, review_text=None):
@@ -23,6 +23,8 @@ def create_review(user_id, movie_id, rating, review_text=None):
                             insert into feed_events (user_id, event_type, target_id, event_data)
                             values (%s, %s, %s, %s)
                             """, (user_id, f"left review with rating {rating}", review_id, json.dumps({'user_id': user_id, "movie_id": movie_id})))
+
+            award_badge_if_earned(user_id)
             conn.commit()
 
 def change_review(review_id, user_id, rating, review_text = None):
