@@ -95,6 +95,7 @@
   display: flex;
   gap: 8px;
   margin-bottom: 8px;
+  flex-wrap: wrap;
 }
 
 .genre-tag {
@@ -104,9 +105,17 @@
   font-weight: 500;
 }
 
+.genre-tag {
+  background-color: #fce7e8; /* Light pink for Romance */
+  color: #db2727;
+}
 .genre-tag.romance {
   background-color: #fce7f3; /* Light pink for Romance */
   color: #db2777;
+}
+.genre-tag.comedy {
+  background-color: #f8fce7; /* Light pink for Romance */
+  color: #dbcc27;
 }
 
 .genre-tag.drama {
