@@ -6,22 +6,22 @@
   padding: 2rem 1rem;
 }
 
-.movie-grid {
+.movie-gridd {
   display: grid;
   grid-template-columns: repeat(4, 1fr); /* Enforce 4 columns */
-  gap: 16px;
+  gap: 8px;
   max-width: 100%;
   justify-items: center;
 }
 
 @media (max-width: 768px) {
-  .movie-grid {
+  .movie-gridd {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 480px) {
-  .movie-grid {
+  .movie-gridd {
     grid-template-columns: 1fr;
   }
 }
@@ -231,4 +231,18 @@ button.show-more {
 
 button.show-more:hover {
   background-color: #2563eb;
+}
+.fade-in {
+  animation: fadeIn 0.6s ease-in-out both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

@@ -6,6 +6,7 @@ import DiscoverPage from "./pages/DiscoverPage";
 import GoogleCallback from "./pages/GoogleCallback";
 import SignUpPage from "./pages/SignUpPage";
 import UserPage from "./pages/UserPage";
+import MoviePage from "./pages/MoviePage";
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/discover" element={<DiscoverPage />} />
         <Route path="/user" element={<UserPage />} />
+        <Route path="/movie/:movie_id" element={<MoviePage />} />
       </Routes>
     </Router>
   );

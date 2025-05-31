@@ -5,6 +5,7 @@ import "./UserPage.css";
 import "./DiscoverPage.css";
 import Navigation from "../components/Navigation";
 import MovieCard from "../components/MovieCard";
+import Loader from "../components/Loader";
 
 const Stat = ({ label, value }) => (
   <div className="stat-card bg-gray-100 p-4 rounded-lg">
@@ -128,18 +129,13 @@ const DiscoverPage = () => {
           />
         </div>
 
-        {loading && movies.length === 0 && (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-            <p className="mt-4">Loading movies...</p>
-          </div>
-        )}
+        {loading && movies.length === 0 && <Loader></Loader>}
 
         {error && <div className="text-red-500 text-center py-12">{error}</div>}
 
         {!error && (
           <div>
-            <div className="movie-grid">
+            <div className="movie-gridd">
               {movies.map((movie) => (
                 <MovieCard
                   key={movie.movie_id}

@@ -30,7 +30,7 @@ const MovieCard = ({ title, rating, poster_link, movie_id, genres }) => {
         </div>
         <div className="movie-rating">
           <Star className="w-4 h-4" />
-          <span>{rating ? rating.toFixed(1) : "N/A"} / 5</span>
+          <span>{rating ? rating.toFixed(1) : "N/A"} / 10</span>
         </div>
         <a
           href={`/movie/${movie_id}`}
