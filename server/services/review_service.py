@@ -24,7 +24,7 @@ def create_review(user_id, movie_id, rating, review_text=None):
                             values (%s, %s, %s, %s)
                             """, (user_id, f"left review with rating {rating}", review_id, json.dumps({'user_id': user_id, "movie_id": movie_id})))
 
-            award_badge_if_earned(user_id)
+            # award_badge_if_earned(user_id)
             conn.commit()
 
 def change_review(review_id, user_id, rating, review_text = None):

@@ -5,13 +5,9 @@ from ..utils.decorators import login_required
 review = Blueprint('review', __name__)
 
 @review.route('/', methods=['POST'])
-@login_required
 def add_review():
-    user_id = session.get('user_id')
-    if not user_id:
-        return jsonify({'error': 'unauthorized'}), 401
-
     data = request.get_json()
+    user_id = data.get('user_id')
     movie_id = data.get('movie_id')
     rating = data.get('rating')
     review_text = data.get('review_text', '')
