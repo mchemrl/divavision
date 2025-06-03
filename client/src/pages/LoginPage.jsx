@@ -1,6 +1,6 @@
-import illustration from '../assets/trolls/jumping_troll.gif';
-import './LoginPage.css';
-import React, { useState } from "react";
+import illustration from "../assets/trolls/jumping_troll.gif";
+import "./LoginPage.css";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -8,6 +8,13 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      navigate("/user");
+    }
+  }, [navigate]);
 
   const handleLoginClick = async (e) => {
     e.preventDefault();
@@ -22,11 +29,13 @@ export default function LoginPage() {
         email: identifier,
         password,
       });
-      navigate("/discover");
+      navigate("/user");
     } catch (err) {
-      setError(
-        err.response?.data?.error || "An error occurred. Please try again."
-      );
+      err.response?.data?.error === "user logged in"
+        ? navigate("/user")
+        : setError(
+            err.response?.data?.error || "An error occurred. Please try again."
+          );
     } finally {
       setLoading(false);
     }
@@ -67,11 +76,7 @@ export default function LoginPage() {
 
           <div className="form-group">
             <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-            />
+            <input id="password" type="password" placeholder="••••••••" />
           </div>
 
           <button type="submit" className="primary-btn" disabled={loading}>

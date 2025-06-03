@@ -2,11 +2,12 @@ import json
 from ..services.achievement_service import award_badge_if_earned
 from ..db import get_connection
 
+
 def fetch_user_by_id(user_id):
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute(""" 
-                        select username, email, profile_pic_url, start_date, tagline
+                        select username, email, profile_pic_url, start_date, tagline, user_id
                         from users
                         where user_id = %s
                         """, (user_id,))
@@ -18,7 +19,8 @@ def fetch_user_by_id(user_id):
         'email': row[1],
         'profile_pic_url': row[2],
         'start_date': row[3].strftime("%Y-%m-%d"),
-        'tagline': row[4]
+        'tagline': row[4],
+        'id': row[5]
     }
 
 def change_user(user_id, updated_profile):

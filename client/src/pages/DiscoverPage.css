@@ -1,0 +1,248 @@
+.user-page-container {
+  background-color: #f9fafb;
+}
+
+.main-content {
+  padding: 2rem 1rem;
+}
+
+.movie-gridd {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Enforce 4 columns */
+  gap: 8px;
+  max-width: 100%;
+  justify-items: center;
+}
+
+@media (max-width: 768px) {
+  .movie-gridd {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .movie-gridd {
+    grid-template-columns: 1fr;
+  }
+}
+.user-page-container {
+  min-height: 100vh;
+  background-color: #f9fafb; /* gray-50 */
+}
+
+.main-content {
+  max-width: 80rem; /* max-w-7xl */
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.page-title {
+  font-size: 1.875rem; /* text-3xl */
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+.filters {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+@media (min-width: 640px) {
+  .filters {
+    flex-direction: row;
+  }
+}
+
+.input,
+.select {
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  width: 100%;
+}
+
+.apply-button {
+  padding: 0.5rem 1rem;
+  background-color: #2563eb; /* blue-600 */
+  color: white;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+}
+
+.apply-button:hover {
+  background-color: #1d4ed8; /* blue-700 */
+}
+
+.movie-card {
+  background: white;
+  border-radius: 1rem;
+  text-align: left; /* Align text to the left */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.2s;
+  width: 100%;
+  max-width: 250px;
+  position: relative;
+  overflow: hidden;
+}
+
+.movie-card:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+.movie-poster-container {
+  position: relative;
+  width: 100%;
+  height: 400px;
+}
+
+.movie-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.5rem 0.5rem 0 0; /* Rounded only at the top */
+}
+
+.poster-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.5),
+    transparent
+  ); /* Gradient overlay */
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 10px;
+}
+
+.poster-text {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.movie-info {
+  padding: 16px;
+}
+
+.movie-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+  color: #1f2937;
+}
+
+.movie-genres {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.genre-tag {
+  padding: 4px 8px;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.genre-tag {
+  background-color: #fce7e8; /* Light pink for Romance */
+  color: #db2727;
+}
+.genre-tag.romance {
+  background-color: #fce7f3; /* Light pink for Romance */
+  color: #db2777;
+}
+.genre-tag.comedy {
+  background-color: #f8fce7; /* Light pink for Romance */
+  color: #dbcc27;
+}
+
+.genre-tag.drama {
+  background-color: #e0f2fe; /* Light blue for Drama */
+  color: #0284c7;
+}
+
+.movie-rating {
+  display: flex;
+  align-items: center;
+  color: #f59e0b; /* Yellow for the star */
+  margin-bottom: 8px;
+}
+
+.movie-rating span {
+  margin-left: 4px;
+  font-size: 0.875rem;
+  color: #1f2937;
+}
+
+.see-more {
+  display: block;
+  text-align: right;
+  color: #3b82f6;
+  font-weight: 500;
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.see-more:hover {
+  text-decoration: underline;
+}
+
+.stat-card {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: #ffffff;
+  margin-bottom: 10px;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #b9b9b9;
+}
+
+button {
+  transition: background-color 0.2s;
+}
+
+button.show-more {
+  background-color: #3b82f6;
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+}
+
+button.show-more:hover {
+  background-color: #2563eb;
+}
+.fade-in {
+  animation: fadeIn 0.6s ease-in-out both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
