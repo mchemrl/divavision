@@ -91,7 +91,6 @@ def fetch_user_lists_by_filter(user_id, is_default=None, title=None, search_titl
         for r in rows
     ]
 
-
 def follow_user(follower_id, followed_id):
     with get_connection() as conn:
         with conn.cursor() as cur:
@@ -152,6 +151,16 @@ def fetch_stats(user_id):
                 "favorites": row[6],
                 "reviews": row[7]
             }
+
+def fetch_user_badges(user_id):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+            select * from badges
+            where user_id = %s
+            """, (user_id,))
+            badges = cur.fetchall()
+    return badges
 
 def fetch_followers(user_id):
     query = """

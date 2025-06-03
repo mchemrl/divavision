@@ -2,7 +2,7 @@ from flask import Blueprint, session, jsonify, request
 from ..utils.decorators import login_required
 from ..services.profile_service import (fetch_user_by_id, change_user, fetch_user_lists_by_filter,
                                         follow_user, unfollow_user, fetch_stats,
-                                        fetch_following, fetch_followers, fetch_feed)
+                                        fetch_following, fetch_followers, fetch_feed, fetch_user_badges)
 
 profile = Blueprint('profile', __name__)
 
@@ -75,6 +75,11 @@ def get_user_favorites(user_id):
 def get_user_watched(user_id):
     user_watched = fetch_user_lists_by_filter(user_id, is_default=True, title="Watched")
     return jsonify({'watched': user_watched}), 200
+
+@profile.route('/<int:user_id>/badges', methods=['GET'])
+def get_user_badges(user_id):
+    user_badges = fetch_user_badges(user_id)
+    return jsonify({'badges': user_badges}), 200
 
 @profile.route('/<int:user_id>/followers', methods=['GET'])
 def get_user_followers(user_id):
