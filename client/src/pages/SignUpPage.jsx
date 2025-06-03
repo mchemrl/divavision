@@ -1,4 +1,4 @@
-import illustration from '../assets/trolls/jumping_troll.gif';
+import illustration from "../assets/trolls/jumping_troll.gif";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -45,8 +45,8 @@ export default function SignUpPage() {
     const code = e.target.elements.code.value;
 
     try {
-      await axios.post("/verify", { email, code });
-      navigate("/discover");
+      await axios.post("/auth/verify", { email, code });
+      navigate("/profile");
     } catch (err) {
       setError(
         err.response?.data?.error || "An error occurred. Please try again."

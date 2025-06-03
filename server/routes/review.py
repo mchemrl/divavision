@@ -23,7 +23,6 @@ def add_review():
     return jsonify({'message': 'review created'}), 201
 
 @review.route('/', methods=['DELETE'])
-@login_required
 def remove_review():
     user_id = session.get('user_id')
     if not user_id:
@@ -38,7 +37,6 @@ def remove_review():
     return jsonify({'message': 'review deleted'}), 200
 
 @review.route('/', methods=['PUT'])
-@login_required
 def update_review():
     user_id = session.get('user_id')
     if not user_id:

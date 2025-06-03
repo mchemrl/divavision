@@ -53,33 +53,36 @@ def fetch_reviews(user_id=None, movie_id=None, keyword=None, rating_min=None, ra
     valid_sort_fields = ['created_at', 'rating']
     if sort_by not in valid_sort_fields:
         sort_by = 'created_at'
+
     filters = list()
     values = list()
     if user_id:
-        filters.append("user_id = %s")
+        filters.append("r.user_id = %s")
         values.append(user_id)
     if movie_id:
-        filters.append("movie_id = %s")
+        filters.append("r.movie_id = %s")
         values.append(movie_id)
     if keyword:
-        filters.append("review_text ilike %s")
+        filters.append("r.review_text ILIKE %s")
         values.append(f"%{keyword}%")
     if rating_min is not None:
-        filters.append("rating >= %s")
+        filters.append("r.rating >= %s")
         values.append(rating_min)
     if rating_max is not None:
-        filters.append("rating <= %s")
+        filters.append("r.rating <= %s")
         values.append(rating_max)
 
-    where_clause = f"where {' and '.join(filters)}" if filters else ""
+    where_clause = f"WHERE {' AND '.join(filters)}" if filters else ""
+
     query = f"""
-        select review_id, user_id, movie_id, rating, review_text, created_at
-        from reviews
+        SELECT r.review_id, r.user_id, u.username, r.movie_id, r.rating, r.review_text, r.created_at
+        FROM reviews r
+        JOIN users u ON r.user_id = u.user_id
         {where_clause}
-        order by {sort_by} desc
-        limit %s
+        ORDER BY r.{sort_by} DESC
+        LIMIT %s
     """
-    values.extend([limit])
+    values.append(limit)
 
     with get_connection() as conn:
         with conn.cursor() as cur:
@@ -89,9 +92,11 @@ def fetch_reviews(user_id=None, movie_id=None, keyword=None, rating_min=None, ra
                 {
                     'review_id': row[0],
                     'user_id': row[1],
-                    'movie_id': row[2],
-                    'rating': row[3],
-                    'review_text': row[4],
-                    'created_at': row[5].strftime("%Y-%m-%d"),
+                    'username': row[2],
+                    'movie_id': row[3],
+                    'rating': row[4],
+                    'review_text': row[5],
+                    'created_at': row[6].strftime("%Y-%m-%d"),
                 } for row in rows
             ]
+
