@@ -5,6 +5,7 @@ from .list import list
 from .movie import movie
 from .review import review
 from .achievement import achievement
+from .feed import feed
 
 routes = Blueprint('routes', __name__, url_prefix='/')
 
@@ -14,3 +15,4 @@ routes.register_blueprint(list, url_prefix='/list')
 routes.register_blueprint(movie, url_prefix='/movie')
 routes.register_blueprint(review, url_prefix='/review')
 routes.register_blueprint(achievement, url_prefix='/achievement')
+routes.register_blueprint(feed, url_prefix='/feed')

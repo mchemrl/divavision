@@ -104,7 +104,7 @@ def follow_user(follower_id, followed_id):
             cur.execute("""
                             insert into feed_events (user_id, event_type, target_id, event_data)
                             values (%s, %s, %s, %s)
-                        """, (follower_id, 'followed', followed_id, json.dumps({"follower": follower_id, "followed": followed_id})))
+                        """, (follower_id, 'follow', followed_id, json.dumps({"follower": follower_id, "followed": followed_id})))
             award_badge_if_earned(follower_id)
             conn.commit()
 
@@ -207,34 +207,3 @@ def fetch_following(user_id):
         }
         for r in rows
     ]
-
-def fetch_feed(user_id):
-    with get_connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                select followed_id
-                from followers
-                where follower_id = %s
-            """, (user_id,))
-            followed_ids = [row[0] for row in cur.fetchall()]
-
-            if not followed_ids:
-                return []
-
-            cur.execute("""
-                select event_id, user_id, event_type, target_id, event_data, created_at
-                from feed_events
-                where user_id = any(%s)
-                order by created_at desc
-                LIMIT 50
-            """, (followed_ids,))
-            events = cur.fetchall()
-
-            return [{
-                'event_id': row[0],
-                'user_id': row[1],
-                'event_type': row[2],
-                'target_id': row[3],
-                'event_data': row[4],
-                'created_at': row[5].strftime("%Y-%m-%d")
-            } for row in events]

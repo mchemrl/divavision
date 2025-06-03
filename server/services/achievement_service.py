@@ -46,7 +46,7 @@ def count_lists_by_user(user_id):
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                select count(*) from movie_lists
+                select count(*) from lists
                 where user_id = %s
             """, (user_id,))
             return cur.fetchone()[0]
@@ -65,7 +65,7 @@ def count_follows_by_user(user_id):
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                select count(*) from follows
+                select count(*) from followers
                 where follower_id = %s
             """, (user_id,))
             return cur.fetchone()[0]

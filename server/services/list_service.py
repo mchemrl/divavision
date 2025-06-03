@@ -20,7 +20,7 @@ def create_list(user_id, title, description = None, picture_url = None, is_defau
                 cur.execute("""
                 insert into feed_events (user_id, event_type, target_id, event_data)
                 values (%s, %s, %s, %s)
-                """, (user_id, f"created list {title}", list_id, json.dumps({'user_id': user_id})))
+                """, (user_id, "list_created", list_id, json.dumps({'user_id': user_id})))
 
             award_badge_if_earned(user_id)
             conn.commit()
@@ -133,12 +133,12 @@ def add_movie(list_id, movie_id):
                 list_data = cur.fetchone()
                 user_id, title, is_default = list_data
 
-                if is_default and title in ('Favourites', 'Watched'):
+                if is_default and title in ('Favourites'):
                     cur.execute("""
                                     insert into feed_events (user_id, event_type, target_id, event_data)
                                     values (%s, %s, %s, %s)
                                    """, (user_id,
-                        f'added to {title}', list_item_id, json.dumps({ 'user_id': user_id, 'movie_id': movie_id })
+                        f'add_favorite', list_item_id, json.dumps({ 'user_id': user_id, 'movie_id': movie_id })
                     ))
 
                 conn.commit()

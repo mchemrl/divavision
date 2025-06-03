@@ -1,4 +1,3 @@
-import requests
 from flask import Blueprint, session, jsonify, request
 from ..utils.decorators import login_required
 from ..services.list_service import create_list, delete_list, change_list, fetch_list_by_id, fetch_lists, add_movie, delete_movie

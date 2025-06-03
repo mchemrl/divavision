@@ -2,7 +2,7 @@ from flask import Blueprint, session, jsonify, request
 from ..utils.decorators import login_required
 from ..services.profile_service import (fetch_user_by_id, change_user, fetch_user_lists_by_filter,
                                         follow_user, unfollow_user, fetch_stats,
-                                        fetch_following, fetch_followers, fetch_feed, fetch_user_badges)
+                                        fetch_following, fetch_followers, fetch_user_badges)
 
 profile = Blueprint('profile', __name__)
 
@@ -48,16 +48,6 @@ def get_user_stats(user_id):
         return jsonify({"error": "user not found"}), 404
     return jsonify(stats), 200
 
-
-@profile.route('/feed', methods=['GET'])
-@login_required
-def get_feed():
-    user_id = session.get('user_id')
-    if not user_id:
-        return jsonify({'error': 'unauthorized'}), 401
-
-    feed_events = fetch_feed(user_id)
-    return jsonify(feed_events)
 
 @profile.route('/<int:user_id>/lists', methods=['GET'])
 def get_user_lists(user_id):
