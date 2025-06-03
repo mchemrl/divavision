@@ -1,4 +1,4 @@
-from ..db import get_connection
+from ..utils.db import get_connection
 
 def fetch_feed(user_id):
     with get_connection() as conn:

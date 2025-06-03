@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Star } from "lucide-react";
-import axios from "axios";
+import axios from "../axiosConfig";
 import { useNavigate } from "react-router-dom";
 import "./UserPage.css";
 import Navigation from "../components/Navigation";

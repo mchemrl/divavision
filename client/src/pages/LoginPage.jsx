@@ -2,7 +2,7 @@ import illustration from "../assets/trolls/jumping_troll.gif";
 import "./LoginPage.css";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../axiosConfig";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -16,30 +16,37 @@ export default function LoginPage() {
     }
   }, [navigate]);
 
-  const handleLoginClick = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+const handleLoginClick = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError("");
 
-    const identifier = e.target.elements.email.value;
-    const password = e.target.elements.password.value;
+  const identifier = e.target.elements.email.value;
+  const password = e.target.elements.password.value;
 
-    try {
-      const response = await axios.post("/auth/login", {
+  try {
+    await axios.post(
+      "/auth/login",
+      {
         email: identifier,
-        password,
-      });
+        password: password,
+      }
+    );
+
+    const sessionCheck = await axios.get("/profile/me");
+    console.log("Session check user:", sessionCheck.data);
+
+    navigate("/user");
+  } catch (err) {
+    if (err.response?.data?.error === "user logged in") {
       navigate("/user");
-    } catch (err) {
-      err.response?.data?.error === "user logged in"
-        ? navigate("/user")
-        : setError(
-            err.response?.data?.error || "An error occurred. Please try again."
-          );
-    } finally {
-      setLoading(false);
+    } else {
+      setError(err.response?.data?.error || "An error occurred. Please try again.");
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleGoogleLogin = () => {
     window.location.href = "/login/google";

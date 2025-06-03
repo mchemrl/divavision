@@ -7,8 +7,11 @@ review = Blueprint('review', __name__)
 @review.route('/', methods=['POST'])
 @login_required
 def add_review():
+    print('Cookies:', request.cookies)
+    print('Session:', dict(session))
     user_id = session.get('user_id')
     if not user_id:
+        print(f'{user_id}')
         return jsonify({'error': 'unauthorized'}), 401
 
     data = request.get_json()

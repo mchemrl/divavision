@@ -1,5 +1,5 @@
 from werkzeug.security import generate_password_hash
-from server.db import get_connection
+from ..utils.db import get_connection
 from ..services.list_service import create_list
 
 

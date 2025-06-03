@@ -1,4 +1,4 @@
-from ..db import get_connection
+from ..utils.db import get_connection
 
 def fetch_movie_by_id(movie_id: int):
     with get_connection() as conn:

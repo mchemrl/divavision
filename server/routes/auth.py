@@ -1,7 +1,7 @@
 from flask import Blueprint, request, session, g, jsonify, url_for
 from werkzeug.security import check_password_hash
 from ..services.auth_service import fetch_user_by_id, fetch_user_by_identifier, create_user, create_user_if_not_exists, create_basic_lists
-from server.app.oauth import oauth
+from ..utils.oauth import oauth
 from ..utils.email_verification import generate_verification_code, send_verification_email, store_verification_code, verification_codes
 
 
@@ -56,6 +56,7 @@ def login():
     data = request.json
     identifier = data.get('username') or data.get('email')
     password = data.get('password')
+    print('blabla')
 
     if not identifier:
         return jsonify({'error': 'username or email is required'}), 400
@@ -68,12 +69,18 @@ def login():
 
     session.clear()
     session['user_id'] = user[0]
+    session.permanent = False
+    print(session.get('user_id'))
+    print(session.get('user_id'))
+    print(session.get('user_id'))
+
     return jsonify({'message': 'login successful', 'user_id': user[0], 'username': user[1]}), 200
 
 
 @auth.before_app_request
 def load_logged_in_user():
     user_id = session.get('user_id')
+    print(user_id)
     if user_id is None:
         g.user = None
     else:
@@ -82,6 +89,7 @@ def load_logged_in_user():
 @auth.route('/logout', methods=['POST'])
 def logout():
     session.clear()
+    print('logout')
     return jsonify({'message': 'logged out successfully'}), 200
 
 @auth.route('/login/google')

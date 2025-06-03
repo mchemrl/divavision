@@ -88,6 +88,8 @@ def add_movie_to_list(list_id):
     add_movie(list_id, movie_id)
     return jsonify({'message': 'movie added to list'}), 201
 
+#def add_
+
 @list.route('/<int:list_id>/movies/<int:movie_id>', methods=['DELETE'])
 @login_required
 def remove_movie_from_list(list_id, movie_id):

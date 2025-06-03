@@ -1,7 +1,7 @@
 import illustration from '../assets/trolls/jumping_troll.gif';
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../axiosConfig";
 import "./LoginPage.css";
 
 export default function SignUpPage() {
@@ -25,7 +25,8 @@ export default function SignUpPage() {
         username,
         email: emailValue,
         password,
-      });
+      },
+      { withCredentials: true });
       setEmail(emailValue);
       setShowVerification(true);
     } catch (err) {

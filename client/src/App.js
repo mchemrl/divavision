@@ -7,6 +7,7 @@ import GoogleCallback from "./pages/GoogleCallback";
 import SignUpPage from "./pages/SignUpPage";
 import UserPage from "./pages/UserPage";
 import MoviePage from "./pages/MoviePage";
+import axios from "axios";
 
 export default function App() {
   return (

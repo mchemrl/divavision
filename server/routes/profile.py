@@ -10,6 +10,9 @@ profile = Blueprint('profile', __name__)
 @login_required
 def get_my_profile():
     user_id = session.get('user_id')
+    # print('Cookies:', request.cookies)
+    # print('Session:', dict(session))
+    # print(user_id)
     if not user_id:
         return jsonify({'error': 'unauthorized'}), 401
     profile_data = fetch_user_by_id(user_id)

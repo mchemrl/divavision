@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../axiosConfig";
 import { Star } from "lucide-react";
 import Navigation from "../components/Navigation";
 import Loader from "../components/Loader";
@@ -70,28 +70,35 @@ const MoviePage = () => {
     fetchData();
   }, [movie_id]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const profileRes = await axios.get("/profile/me");
-      const user_id = profileRes.data.id;
-      const response = await axios.post("/review", {
-        user_id: user_id,
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const response = await axios.post(
+      'http://localhost:5000/review/',
+      {
         movie_id: parseInt(movie_id),
         rating,
         review_text: reviewText,
-      });
-      setSubmitMessage("Review submitted!");
-      setRating(0);
-      setReviewText("");
-      const updatedReviews = await axios.get(`/review?movie_id=${movie_id}`);
-      setReviews(updatedReviews.data);
-    } catch (err) {
-      console.error("Failed to submit review", err);
-      setSubmitMessage("Error submitting review.");
-    }
-  };
+      }
+    );
 
+    setSubmitMessage('Review submitted!');
+    setRating(0);
+    setReviewText('');
+
+    // Fetch updated reviews again with full URL and credentials
+    const updatedReviews = await axios.get(
+      `http://localhost:5000/review?movie_id=${movie_id}`,
+      {
+        withCredentials: true,
+      }
+    );
+    setReviews(updatedReviews.data);
+  } catch (err) {
+    console.error('Failed to submit review', err);
+    setSubmitMessage('Error submitting review.');
+  }
+};
   return (
     <div className="user-page-container">
       <Navigation />

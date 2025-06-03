@@ -1,6 +1,6 @@
 import json
 from ..services.achievement_service import award_badge_if_earned
-from ..db import get_connection
+from ..utils.db import get_connection
 
 
 def fetch_user_by_id(user_id):

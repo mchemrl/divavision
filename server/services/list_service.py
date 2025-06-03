@@ -1,7 +1,7 @@
 import json
 import psycopg2
 from ..services.achievement_service import award_badge_if_earned
-from ..db import get_connection
+from ..utils.db import get_connection
 
 def create_list(user_id, title, description = None, picture_url = None, is_default = False):
     print(user_id, title, description, picture_url, is_default)
@@ -144,3 +144,18 @@ def add_movie(list_id, movie_id):
                 conn.commit()
             except psycopg2.errors.UniqueViolation:
                 conn.rollback()
+
+def add_fav(user_id, movie_id):
+    fav_list_id = get_fav_list_id(user_id)
+    add_movie(fav_list_id, movie_id)
+
+def get_fav_list_id(user_id):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+            select list_id from lists
+            where user_id = %s
+            and is_default = True
+            and title = "Favourites" """, (user_id,))
+            list_id = cur.fetchone()
+    return list_id
