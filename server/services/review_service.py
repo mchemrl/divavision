@@ -1,5 +1,6 @@
 import json
 from ..services.achievement_service import award_badge_if_earned
+from ..services.list_service import add_watched_movie
 from ..utils.db import get_connection
 
 def create_review(user_id, movie_id, rating, review_text=None):
@@ -24,7 +25,16 @@ def create_review(user_id, movie_id, rating, review_text=None):
                             insert into feed_events (user_id, event_type, target_id, event_data)
                             values (%s, %s, %s, %s)
                             """, (user_id, "write_review", review_id, json.dumps({'user_id': user_id, "movie_id": movie_id})))
-
+            add_watched_movie(user_id, movie_id)
+            cur.execute("""
+                update movies
+                set avg_user_rating = (
+                    select round(avg(rating)::numeric, 2)
+                    from reviews
+                    where movie_id = %s
+                )
+                where movie_id = %s
+            """, (movie_id, movie_id))
             award_badge_if_earned(user_id)
             conn.commit()
 

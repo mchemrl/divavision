@@ -1,6 +1,7 @@
 import json
 import psycopg2
-from ..services.achievement_service import award_badge_if_earned
+from .achievement_service import award_badge_if_earned
+from .movie_service import fetch_movie_by_id
 from ..utils.db import get_connection
 
 def create_list(user_id, title, description = None, picture_url = None, is_default = False):
@@ -48,7 +49,6 @@ def change_list(list_id, user_id, title, description=None, picture_url=None):
             """, (title, description, picture_url, list_id, user_id))
             conn.commit()
 
-
 def fetch_lists(user_id=None, search=None, sort_by=None, order=None):
     sort_by = (sort_by or 'created_at').lower()
     order = (order or 'desc').lower()
@@ -89,20 +89,34 @@ def fetch_list_by_id(list_id):
         with conn.cursor() as cur:
             cur.execute("""
                    select list_id, user_id, title, description, picture_url, created_at
-                   from lists
+                   from lists 
                    where list_id = %s
                """, (list_id,))
             row = cur.fetchone()
             if not row:
                 return None
-            return {
+
+            list_data = {
                 'list_id': row[0],
                 'user_id': row[1],
                 'title': row[2],
                 'description': row[3],
                 'picture_url': row[4],
-                'created_at': row[5].isoformat()
+                'created_at': row[5].isoformat(),
+                'movies': []
             }
+
+            cur.execute("""
+                select movie_id from list_items where list_id = %s
+            """, (list_id,))
+            movie_ids = [r[0] for r in cur.fetchall()]
+
+            for movie_id in movie_ids:
+                movie_data = fetch_movie_by_id(movie_id)
+                if movie_data:
+                    list_data['movies'].append(movie_data)
+
+            return list_data
 
 def delete_movie(list_id, movie_id):
     with get_connection() as conn:
@@ -146,16 +160,20 @@ def add_movie(list_id, movie_id):
                 conn.rollback()
 
 def add_fav_movie(user_id, movie_id):
-    fav_list_id = get_fav_list_id(user_id)
+    fav_list_id = get_def_list_id(user_id, "Favourites")
     add_movie(fav_list_id, movie_id)
 
-def get_fav_list_id(user_id):
+def add_watched_movie(user_id, movie_id):
+    watched_list_id = get_def_list_id(user_id, "Watched")
+    add_movie(watched_list_id, movie_id)
+
+def get_def_list_id(user_id, name):
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
             select list_id from lists
             where user_id = %s
             and is_default = True
-            and title = "Favourites" """, (user_id,))
+            and title = %s """, (user_id, name))
             list_id = cur.fetchone()
     return list_id

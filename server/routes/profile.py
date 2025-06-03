@@ -3,6 +3,7 @@ from ..utils.decorators import login_required
 from ..services.profile_service import (fetch_user_by_id, change_user, fetch_user_lists_by_filter,
                                         follow_user, unfollow_user, fetch_stats,
                                         fetch_following, fetch_followers, fetch_user_badges)
+from ..services.list_service import fetch_list_by_id, get_def_list_id
 
 profile = Blueprint('profile', __name__)
 
@@ -10,9 +11,6 @@ profile = Blueprint('profile', __name__)
 @login_required
 def get_my_profile():
     user_id = session.get('user_id')
-    # print('Cookies:', request.cookies)
-    # print('Session:', dict(session))
-    # print(user_id)
     if not user_id:
         return jsonify({'error': 'unauthorized'}), 401
     profile_data = fetch_user_by_id(user_id)
@@ -66,12 +64,12 @@ def get_user_favorites(user_id):
 
 @profile.route('/<int:user_id>/watched', methods=['GET'])
 def get_user_watched(user_id):
-    user_watched = fetch_user_lists_by_filter(user_id, is_default=True, title="Watched")
+    user_watched = fetch_list_by_id(get_def_list_id(user_id, "Watched"))
     return jsonify({'watched': user_watched}), 200
 
 @profile.route('/<int:user_id>/badges', methods=['GET'])
 def get_user_badges(user_id):
-    user_badges = fetch_user_badges(user_id)
+    user_badges = fetch_list_by_id(get_def_list_id(user_id, "Favourites"))
     return jsonify({'badges': user_badges}), 200
 
 @profile.route('/<int:user_id>/followers', methods=['GET'])
