@@ -1,6 +1,7 @@
 from flask import Blueprint, session, jsonify, request
 from ..utils.decorators import login_required
-from ..services.list_service import create_list, delete_list, change_list, fetch_list_by_id, fetch_lists, add_movie, delete_movie
+from ..services.list_service import (create_list, delete_list, change_list, fetch_list_by_id,
+                                     fetch_lists, add_movie, delete_movie, add_fav_movie)
 
 list = Blueprint('list', __name__)
 
@@ -88,7 +89,22 @@ def add_movie_to_list(list_id):
     add_movie(list_id, movie_id)
     return jsonify({'message': 'movie added to list'}), 201
 
-#def add_
+@list.route('/<int:list_id>/movies', methods=['POST'])
+@login_required
+def add_fav(movie_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'unauthorized'}), 401
+
+    data = request.get_json()
+    movie_id = data.get('movie_id')
+
+    if not movie_id:
+        return jsonify({'error': 'movie_id is required'}), 400
+
+    add_fav_movie(movie_id)
+    return jsonify({'message': 'movie added to list'}), 201
+
 
 @list.route('/<int:list_id>/movies/<int:movie_id>', methods=['DELETE'])
 @login_required

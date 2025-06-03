@@ -14,6 +14,26 @@ import {
 const Navigation = () => {
   const navigate = useNavigate();
 
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/auth/logout", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        navigate("/");
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (error) {
+      console.error("An error occurred during logout", error);
+    }
+  };
+
   return (
     <aside className="sidebar">
       <div>
@@ -38,7 +58,7 @@ const Navigation = () => {
           </button>
         </nav>
       </div>
-      <button className="logout-button">
+      <button className="logout-button" onClick={handleLogout}>
         <LogOut className="icon" /> Log Out
       </button>
     </aside>

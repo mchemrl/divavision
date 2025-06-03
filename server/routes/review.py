@@ -7,8 +7,6 @@ review = Blueprint('review', __name__)
 @review.route('/', methods=['POST'])
 @login_required
 def add_review():
-    print('Cookies:', request.cookies)
-    print('Session:', dict(session))
     user_id = session.get('user_id')
     if not user_id:
         print(f'{user_id}')
@@ -30,7 +28,6 @@ def add_review():
     return jsonify({'message': 'review created'}), 201
 
 @review.route('/', methods=['DELETE'])
-@login_required
 def remove_review():
     user_id = session.get('user_id')
     if not user_id:
@@ -45,7 +42,6 @@ def remove_review():
     return jsonify({'message': 'review deleted'}), 200
 
 @review.route('/', methods=['PUT'])
-@login_required
 def update_review():
     user_id = session.get('user_id')
     if not user_id:

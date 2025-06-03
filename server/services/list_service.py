@@ -145,7 +145,7 @@ def add_movie(list_id, movie_id):
             except psycopg2.errors.UniqueViolation:
                 conn.rollback()
 
-def add_fav(user_id, movie_id):
+def add_fav_movie(user_id, movie_id):
     fav_list_id = get_fav_list_id(user_id)
     add_movie(fav_list_id, movie_id)
 

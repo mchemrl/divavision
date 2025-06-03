@@ -48,21 +48,25 @@ const MoviePage = () => {
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
   const [submitMessage, setSubmitMessage] = useState(null);
-  const navigate = useNavigate();
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const [editingReviewId, setEditingReviewId] = useState(null);
 
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [movieRes, reviewRes] = await Promise.all([
+        const [movieRes, reviewRes, profileRes] = await Promise.all([
           axios.get(`/movie/${movie_id}`),
           axios.get(`/review?movie_id=${movie_id}&limit=50`),
+          axios.get("/profile/me"),
         ]);
         setMovie(movieRes.data);
         setReviews(reviewRes.data);
+        setCurrentUserId(profileRes.data.id);
         setLoading(false);
       } catch (err) {
-        console.error("Failed to fetch movie or reviews", err);
+        console.error("Failed to fetch data", err);
         setError("Failed to load movie. Please try again later.");
         setLoading(false);
       }
@@ -70,35 +74,47 @@ const MoviePage = () => {
     fetchData();
   }, [movie_id]);
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const response = await axios.post(
-      'http://localhost:5000/review/',
-      {
-        movie_id: parseInt(movie_id),
-        rating,
-        review_text: reviewText,
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (editingReviewId) {
+        await axios.put("http://localhost:5000/review/", {
+          review_id: editingReviewId,
+          rating,
+          review_text: reviewText,
+        });
+        setSubmitMessage("Review updated!");
+        setEditingReviewId(null);
+      } else {
+        await axios.post("http://localhost:5000/review/", {
+          movie_id: parseInt(movie_id),
+          rating,
+          review_text: reviewText,
+        });
+        setSubmitMessage("Review submitted!");
       }
-    );
 
-    setSubmitMessage('Review submitted!');
-    setRating(0);
-    setReviewText('');
+      setRating(0);
+      setReviewText("");
+      const updatedReviews = await axios.get(`/review?movie_id=${movie_id}`);
+      setReviews(updatedReviews.data);
+    } catch (err) {
+      console.error("Failed to submit/update review", err);
+      setSubmitMessage("Error submitting review.");
+    }
+  };
+  const handleDelete = async (review_id) => {
+    try {
+      await axios.delete(`http://localhost:5000/review/`, {
+        params: { review_id },
+      });
+      const updatedReviews = await axios.get(`/review?movie_id=${movie_id}`);
+      setReviews(updatedReviews.data);
+    } catch (err) {
+      console.error("Failed to delete review", err);
+    }
+  };
 
-    // Fetch updated reviews again with full URL and credentials
-    const updatedReviews = await axios.get(
-      `http://localhost:5000/review?movie_id=${movie_id}`,
-      {
-        withCredentials: true,
-      }
-    );
-    setReviews(updatedReviews.data);
-  } catch (err) {
-    console.error('Failed to submit review', err);
-    setSubmitMessage('Error submitting review.');
-  }
-};
   return (
     <div className="user-page-container">
       <Navigation />
@@ -185,11 +201,40 @@ const handleSubmit = async (e) => {
                 ) : (
                   <ul>
                     {reviews.map((rev) => (
-                      <li key={rev.review_id}>
+                      <li key={rev.review_id} style={{ marginBottom: "1rem" }}>
+                        <p>
+                          <strong>{rev.username}</strong>
+                        </p>
                         <p>
                           <strong>Rating:</strong> {rev.rating} / 5
                         </p>
-                        <p>{rev.review_text}</p>
+                        <p>
+                          <strong>Review:</strong> {rev.review_text}
+                        </p>
+                        <p>
+                          <strong>Date:</strong> {rev.created_at}
+                        </p>
+
+                        {rev.user_id === currentUserId && (
+                          <div style={{ marginTop: "0.5rem" }}>
+                            <button
+                              className="edit-btn"
+                              onClick={() => {
+                                setRating(rev.rating);
+                                setReviewText(rev.review_text);
+                                setEditingReviewId(rev.review_id);
+                              }}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              className="delete-btn"
+                              onClick={() => handleDelete(rev.review_id)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        )}
                       </li>
                     ))}
                   </ul>
