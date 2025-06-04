@@ -10,6 +10,8 @@ import {
   Trophy,
   LogOut,
 } from "lucide-react";
+import ill from '../assets/trolls/huggin_troll.gif';
+
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -58,6 +60,7 @@ const Navigation = () => {
           </button>
         </nav>
       </div>
+      <img id="troll" src={ill}></img>
       <button className="logout-button" onClick={handleLogout}>
         <LogOut className="icon" /> Log Out
       </button>
