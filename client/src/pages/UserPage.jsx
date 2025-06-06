@@ -116,13 +116,13 @@ const UserPage = () => {
               <button className="tab">Recent Reviews</button>
             </div>
             <div className="movie-grid fade-in">
-              {watchedMovies.map((movie) => (
+              {/* {watchedMovies.map((movie) => (
                 <MovieCard
                   key={movie.title}
                   title={movie.title}
                   rating={movie.rating}
                 />
-              ))}
+              ))} */}
             </div>
           </div>
         </main>

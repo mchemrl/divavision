@@ -10,8 +10,7 @@ import {
   Trophy,
   LogOut,
 } from "lucide-react";
-import ill from '../assets/trolls/huggin_troll.gif';
-
+import ill from "../assets/trolls/huggin_troll.gif";
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -49,7 +48,7 @@ const Navigation = () => {
           <button onClick={() => navigate("/discover")} className="nav-button">
             <Compass className="icon" /> Discover
           </button>
-          <button className="nav-button">
+          <button className="nav-button" onClick={() => navigate("/lists")}>
             <Layers className="icon" /> Lists
           </button>
           <button className="nav-button" onClick={() => navigate("/user")}>

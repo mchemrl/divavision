@@ -7,6 +7,8 @@ import GoogleCallback from "./pages/GoogleCallback";
 import SignUpPage from "./pages/SignUpPage";
 import UserPage from "./pages/UserPage";
 import MoviePage from "./pages/MoviePage";
+import ListsPage from "./pages/ListsPage";
+import ListPage from "./pages/ListPage";
 import axios from "axios";
 
 export default function App() {
@@ -20,6 +22,8 @@ export default function App() {
         <Route path="/discover" element={<DiscoverPage />} />
         <Route path="/user" element={<UserPage />} />
         <Route path="/movie/:movie_id" element={<MoviePage />} />
+        <Route path="/lists" element={<ListsPage />} />
+        <Route path="/list/:list_id" element={<ListPage />} />
       </Routes>
     </Router>
   );

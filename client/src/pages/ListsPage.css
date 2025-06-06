@@ -1,0 +1,152 @@
+.list-page {
+  display: flex;
+  height: 100vh;
+  font-family: "Inter", sans-serif;
+  color: #4c1d95;
+}
+
+.list-header {
+  text-align: center;
+  font-size: 2rem;
+  margin: 1.5rem 0;
+}
+
+.list-content {
+  padding: 1rem 2rem;
+}
+
+.list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+.list-card {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  text-align: center;
+}
+
+.list-image {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.list-title {
+  font-size: 1.25rem;
+  margin: 0.5rem 0;
+}
+
+.list-description {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.list-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-around;
+}
+
+.list-actions button {
+  padding: 0.5rem 0.75rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  transition: background-color 0.2s ease;
+}
+
+.list-actions button:hover {
+  background-color: #0056b3;
+}
+
+.create-button {
+  font-size: 1.5rem;
+  padding: 2rem 1rem;
+  background-color: #e0e0e0;
+  border-radius: 12px;
+  border: 2px dashed #aaa;
+  cursor: pointer;
+  text-align: center;
+}
+
+.create-button:hover {
+  background-color: #d0d0d0;
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+.popup input,
+.popup textarea {
+  width: 100%;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.popup-buttons {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+.main-content {
+  flex: 1;
+  padding: 40px;
+  overflow-y: auto;
+  background: linear-gradient(90deg, #e9d8fd 0%, #f3e8ff 100%);
+}
+
+.popup-buttons button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #28a745;
+  color: white;
+}
+
+.popup-buttons button:last-child {
+  background-color: #dc3545;
+}
+
+.popup-buttons button:hover {
+  opacity: 0.9;
+}
+.primary-btn {
+  background-color: var(--deep-purple);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+}
+
+.primary-btn:hover {
+  background-color: var(--deep-purple-hover);
+}
