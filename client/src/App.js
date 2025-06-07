@@ -21,6 +21,7 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/discover" element={<DiscoverPage />} />
         <Route path="/user" element={<UserPage />} />
+        <Route path="/user/:user_id" element={<UserPage />} />
         <Route path="/movie/:movie_id" element={<MoviePage />} />
         <Route path="/lists" element={<ListsPage />} />
         <Route path="/list/:list_id" element={<ListPage />} />

@@ -400,6 +400,13 @@
   padding: 0;
   margin-top: 1rem;
 }
+.user {
+  color: #6f40b4;
+}
+.user:hover {
+  cursor: pointer;
+  text-decoration-line: underline;
+}
 
 .review-list li {
   margin-bottom: 1rem;

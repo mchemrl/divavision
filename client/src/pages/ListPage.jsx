@@ -130,15 +130,6 @@ const ListPage = () => {
           </div>
         )}
 
-        <div className="add-movie-form">
-          <button
-            onClick={() => setShowMoviePopup(true)}
-            className="primary-btn"
-          >
-            Add Movie
-          </button>
-        </div>
-
         {showMoviePopup && (
           <div className="movie-popup">
             <div className="movie-popup-content">
@@ -180,6 +171,14 @@ const ListPage = () => {
               </button>
             </div>
           ))}
+        </div>
+        <div className="add-movie-form">
+          <button
+            onClick={() => setShowMoviePopup(true)}
+            className="primary-btn"
+          >
+            Add Movie
+          </button>
         </div>
       </main>
     </div>

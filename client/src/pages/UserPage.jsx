@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Star } from "lucide-react";
 import axios from "../axiosConfig";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "./UserPage.css";
 import Navigation from "../components/Navigation";
 import Loader from "../components/Loader";
@@ -17,7 +17,7 @@ const MovieCard = ({ title, rating }) => (
 
 const TopRatedMovies = ({ movies }) => (
   <div className="top-rated-section">
-    <h2 className="section-title">Your Top-Rated Movies</h2>
+    <h2 className="section-title">Top-Rated Movies</h2>
     <div className="movie-grid">
       {movies.map((movie) => (
         <MovieCard key={movie.title} {...movie} />
@@ -34,26 +34,34 @@ const Stat = ({ label, value }) => (
 );
 
 const UserPage = () => {
+  const { user_id } = useParams();
+  const [loggedInUserId, setLoggedInUserId] = useState(null);
   const [user, setUser] = useState(null);
   const [stats, setStats] = useState(null);
   const [watchedMovies, setWatchedMovies] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
+
+  const isOwnProfile = user?.id === loggedInUserId;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const profileRes = await axios.get("/profile/me");
-        const profileData = profileRes.data;
-        setUser(profileData);
+        setLoggedInUserId(profileRes.data.id);
 
-        const [statsRes, watchedRes, favoritesRes] = await Promise.all([
-          axios.get(`/profile/${profileData.id}/stats`),
-          axios.get(`/profile/${profileData.id}/watched`),
-          axios.get(`/profile/${profileData.id}/favorites`),
-        ]);
+        const targetId = user_id || profileRes.data.id;
 
+        const [userRes, statsRes, watchedRes, favoritesRes] = await Promise.all(
+          [
+            axios.get(`/profile/${targetId}`),
+            axios.get(`/profile/${targetId}/stats`),
+            axios.get(`/profile/${targetId}/watched`),
+            axios.get(`/profile/${targetId}/favorites`),
+          ]
+        );
+
+        setUser(userRes.data);
         setStats(statsRes.data);
         setWatchedMovies(watchedRes.data.watched);
         setFavorites(favoritesRes.data.favorites);
@@ -63,8 +71,9 @@ const UserPage = () => {
         setIsLoading(false);
       }
     };
+
     fetchData();
-  }, []);
+  }, [user_id]);
 
   return (
     <div className="user-page-container">
@@ -72,8 +81,7 @@ const UserPage = () => {
 
       {isLoading ? (
         <main className="main-content">
-          {" "}
-          <Loader />{" "}
+          <Loader />
         </main>
       ) : (
         <main className="main-content">
@@ -84,7 +92,9 @@ const UserPage = () => {
               <p className="profile-bio">
                 {user.bio || "Lover of sad indie films 🎬"}
               </p>
-              <button className="edit-profile-btn">Edit Profile</button>
+              {isOwnProfile && (
+                <button className="edit-profile-btn">Edit Profile</button>
+              )}
             </div>
             <div className="profile-stats">
               <Stat label="Watched" value={stats.watched} />

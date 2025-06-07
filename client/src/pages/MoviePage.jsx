@@ -202,7 +202,10 @@ const MoviePage = () => {
                   <ul>
                     {reviews.map((rev) => (
                       <li key={rev.review_id} style={{ marginBottom: "1rem" }}>
-                        <p>
+                        <p
+                          className="user"
+                          onClick={() => navigate(`/user/${rev.user_id}`)}
+                        >
                           <strong>{rev.username}</strong>
                         </p>
                         <p>
