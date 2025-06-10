@@ -6,17 +6,24 @@ import "./UserPage.css";
 import Navigation from "../components/Navigation";
 import Loader from "../components/Loader";
 
-const MovieCard = ({ title, rating }) => (
+const MovieCard = ({ title, rating, movie_id, navigate }) => (
   <div className="movie-card">
-    <div className="movie-title">{title || "Untitled Movie"}</div>
+    <div className="movie-title">
+      <span
+        onClick={() => navigate(`/movie/${movie_id}`)}
+        className="movie-link"
+      >
+        {title || "Untitled Movie"}
+      </span>
+    </div>
     <div className="movie-rating">
       <Star className="w-4 h-4 mr-1" /> {rating ?? "N/A"}
     </div>
   </div>
 );
 
-const Stat = ({ label, value }) => (
-  <div className="stat-card">
+const Stat = ({ label, value, onClick, userId, navigate }) => (
+  <div className="stat-card" onClick={onClick}>
     <div className="stat-value">{value ?? 0}</div>
     <div className="stat-label">{label}</div>
   </div>
@@ -41,6 +48,11 @@ const UserPage = () => {
     profile_pic_url: "",
   });
   const [editError, setEditError] = useState(null);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [showFollowersPopup, setShowFollowersPopup] = useState(false);
+  const [showFollowingPopup, setShowFollowingPopup] = useState(false);
+  const [followers, setFollowers] = useState([]);
+  const [following, setFollowing] = useState([]);
   const navigate = useNavigate();
   const isOwnProfile = user?.id === loggedInUserId;
 
@@ -64,21 +76,25 @@ const UserPage = () => {
           favoritesRes,
           listsRes,
           reviewsRes,
+          followersRes,
+          followingRes,
         ] = await Promise.all([
-          axios.get(`http://localhost:5000/profile/${targetId}`),
-          axios.get(`http://localhost:5000/profile/${targetId}/stats`),
-          axios.get(`http://localhost:5000/profile/${targetId}/watched`),
-          axios.get(`http://localhost:5000/profile/${targetId}/favorites`),
-          axios.get(`http://localhost:5000/profile/${targetId}/lists`),
-          axios.get(`http://localhost:5000/review/`, {
-            params: { user_id: targetId, limit: 10 },
-          }),
+          axios.get(`/profile/${targetId}`),
+          axios.get(`/profile/${targetId}/stats`),
+          axios.get(`/profile/${targetId}/watched`),
+          axios.get(`/profile/${targetId}/favorites`),
+          axios.get(`/profile/${targetId}/lists`),
+          axios.get(`/review/`, { params: { user_id: targetId, limit: 10 } }),
+          axios.get(`/profile/${targetId}/followers`),
+          axios.get(`/profile/${targetId}/following`),
         ]);
 
         setUser(userRes.data || null);
         setStats(statsRes.data || {});
         setWatchedMovies(
-          Array.isArray(watchedRes.data?.watched) ? watchedRes.data.watched : []
+          Array.isArray(watchedRes.data?.watched?.movies)
+            ? watchedRes.data.watched.movies
+            : []
         );
         setFavorites(
           Array.isArray(favoritesRes.data?.favorites)
@@ -89,11 +105,21 @@ const UserPage = () => {
           Array.isArray(listsRes.data?.lists) ? listsRes.data.lists : []
         );
         setReviews(Array.isArray(reviewsRes.data) ? reviewsRes.data : []);
+        setFollowers(followersRes.data || []);
+        setFollowing(followingRes.data || []);
         setEditForm({
           username: userRes.data?.username || "",
           tagline: userRes.data?.tagline || "",
           profile_pic_url: userRes.data?.profile_pic_url || "",
         });
+
+        // Check follow status
+        if (!isOwnProfile) {
+          const followCheck = await axios.get(`/profile/${targetId}/followers`);
+          setIsFollowing(
+            followCheck.data.some((f) => f.user_id === parseInt(currentUserId))
+          );
+        }
       } catch (err) {
         console.error(err);
         setError("Failed to load user data. Please try again later.");
@@ -124,6 +150,26 @@ const UserPage = () => {
 
   const handleEditChange = (e) => {
     setEditForm({ ...editForm, [e.target.name]: e.target.value });
+  };
+
+  const handleFollow = async () => {
+    try {
+      await axios.post(`/profile/${user_id}/follow`);
+      setStats({ ...stats, followers: stats.followers + 1 });
+      setIsFollowing(true);
+    } catch (err) {
+      console.error("Failed to follow", err);
+    }
+  };
+
+  const handleUnfollow = async () => {
+    try {
+      await axios.delete(`/profile/${user_id}/unfollow`);
+      setStats({ ...stats, followers: stats.followers - 1 });
+      setIsFollowing(false);
+    } catch (err) {
+      console.error("Failed to unfollow", err);
+    }
   };
 
   const renderActiveTabContent = () => {
@@ -175,9 +221,9 @@ const UserPage = () => {
         <div className="review-grid">
           {dataToRender.map((review) => (
             <div key={review.review_id} className="review-card">
-              <h3
-                onClick={() => navigate(`/movie/${review.movie_id}`)}
-              >{`Movie ID: ${review.movie_id}`}</h3>
+              <h3 onClick={() => navigate(`/movie/${review.movie_id}`)}>
+                {review.title}
+              </h3>
               <p>
                 <strong>Rating:</strong> {review.rating ?? "N/A"}
               </p>
@@ -189,12 +235,14 @@ const UserPage = () => {
     }
 
     return (
-      <div className="movie-grid fade-in">
+      <div className="movie-gridd fade-in">
         {dataToRender.map((movie) => (
           <MovieCard
-            key={movie.id || movie.title}
+            key={movie.movie_id}
             title={movie.title}
-            rating={movie.rating}
+            rating={movie.avg_user_rating || movie.rating}
+            movie_id={movie.movie_id}
+            navigate={navigate}
           />
         ))}
       </div>
@@ -287,31 +335,40 @@ const UserPage = () => {
                       Edit Profile
                     </button>
                   )}
+                  {!isOwnProfile && (
+                    <button
+                      className={`follow-btn ${isFollowing ? "unfollow" : ""}`}
+                      onClick={isFollowing ? handleUnfollow : handleFollow}
+                    >
+                      {isFollowing ? "Unfollow" : "Follow"}
+                    </button>
+                  )}
                 </>
               )}
             </div>
             <div className="profile-stats">
-              <Stat label="Watched" value={stats.watched} />
-              <Stat label="Favorites" value={stats.favorites} />
-              <Stat label="Reviews" value={stats.reviews} />
-              <Stat label="Lists" value={stats.lists} />
-              <Stat label="Followers" value={stats.followers} />
-              <Stat label="Following" value={stats.following} />
-            </div>
-          </div>
-
-          <div className="summary-cards fade-in">
-            <div className="summary-card">
-              <h3>Favorite Genres</h3>
-              <p>Not enough data</p>
-            </div>
-            <div className="summary-card">
-              <h3>Movies Watched Over Time</h3>
-              <p>
-                {stats.watched
-                  ? `${stats.watched} movies watched`
-                  : "No data available"}
-              </p>
+              <Stat label="Watched" value={stats.watched} navigate={navigate} />
+              <Stat
+                label="Favorites"
+                value={stats.favorites}
+                navigate={navigate}
+              />
+              <Stat label="Reviews" value={stats.reviews} navigate={navigate} />
+              <Stat label="Lists" value={stats.lists} navigate={navigate} />
+              <Stat
+                label="Followers"
+                value={stats.followers}
+                userId={user_id}
+                onClick={() => setShowFollowersPopup(true)}
+                navigate={navigate}
+              />
+              <Stat
+                label="Following"
+                value={stats.following}
+                userId={user_id}
+                onClick={() => setShowFollowingPopup(true)}
+                navigate={navigate}
+              />
             </div>
           </div>
 
@@ -344,6 +401,76 @@ const UserPage = () => {
             </div>
             {renderActiveTabContent()}
           </div>
+
+          {showFollowersPopup && (
+            <div
+              className="popup-overlay"
+              onClick={() => setShowFollowersPopup(false)}
+            >
+              <div
+                className="popup-content"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h2>Followers</h2>
+                <div className="profile-list">
+                  {followers.length > 0 ? (
+                    followers.map((follower) => (
+                      <div key={follower.user_id} className="profile-item">
+                        <span
+                          onClick={() => navigate(`/user/${follower.user_id}`)}
+                        >
+                          {follower.username || `User ${follower.user_id}`}
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="no-data">No followers yet.</div>
+                  )}
+                </div>
+                <button
+                  className="close-btn"
+                  onClick={() => setShowFollowersPopup(false)}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
+
+          {showFollowingPopup && (
+            <div
+              className="popup-overlay"
+              onClick={() => setShowFollowingPopup(false)}
+            >
+              <div
+                className="popup-content"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h2>Following</h2>
+                <div className="profile-list">
+                  {following.length > 0 ? (
+                    following.map((followed) => (
+                      <div key={followed.id} className="profile-item">
+                        <span
+                          onClick={() => navigate(`/user/${followed.user_id}`)}
+                        >
+                          {followed.username || `User ${followed.user_id}`}
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="no-data">Not following anyone yet.</div>
+                  )}
+                </div>
+                <button
+                  className="close-btn"
+                  onClick={() => setShowFollowingPopup(false)}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
         </main>
       )}
     </div>

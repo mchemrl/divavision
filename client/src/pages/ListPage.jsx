@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../axiosConfig";
 import { useParams } from "react-router-dom";
 import Navigation from "../components/Navigation";
 import MovieCard from "../components/MovieCard";
+import Loader from "../components/Loader";
 import "./ListPage.css";
 
 const ListPage = () => {
@@ -18,10 +19,12 @@ const ListPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {
     const fetchList = async () => {
       try {
+        setInitialLoading(true);
         const res = await axios.get(`/list/${list_id}`);
         setList(res.data.list);
         setFormData({
@@ -31,6 +34,8 @@ const ListPage = () => {
         });
       } catch (err) {
         console.error("Failed to fetch list", err);
+      } finally {
+        setInitialLoading(false);
       }
     };
     fetchList();
@@ -81,106 +86,121 @@ const ListPage = () => {
     }
   };
 
-  if (!list) return <div>Loading...</div>;
-
   return (
     <div className="list-page">
       <Navigation />
-      <main className="list-detail-content">
-        {isEditing ? (
-          <div className="edit-form">
-            <input
-              type="text"
-              value={formData.title}
-              onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
-              }
-              placeholder="Title"
-            />
-            <textarea
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              placeholder="Description"
-            />
-            <input
-              type="text"
-              value={formData.picture_url}
-              onChange={(e) =>
-                setFormData({ ...formData, picture_url: e.target.value })
-              }
-              placeholder="Image URL"
-            />
-            <button onClick={handleUpdate}>Save</button>
-            <button onClick={() => setIsEditing(false)}>Cancel</button>
-          </div>
-        ) : (
-          <div className="list-detail-header">
-            <img
-              src={list.picture_url}
-              alt={list.title}
-              className="list-detail-image"
-            />
-            <h1>{list.title}</h1>
-            <p>{list.description}</p>
-            <button onClick={() => setIsEditing(true)} className="primary-btn">
-              Edit
-            </button>
-          </div>
-        )}
-
-        {showMoviePopup && (
-          <div className="movie-popup">
-            <div className="movie-popup-content">
+      {initialLoading ? (
+        <main className="main-content">
+          <Loader />
+        </main>
+      ) : (
+        <main className="main-content">
+          {isEditing ? (
+            <div className="edit-form">
               <input
                 type="text"
-                placeholder="Search movies..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                placeholder="Title"
               />
-              <button onClick={handleSearchMovies}>Search</button>
-              <button onClick={() => setShowMoviePopup(false)}>Close</button>
-              {loading ? (
-                <p>Loading...</p>
-              ) : (
-                <div className="movie-grid">
-                  {searchResults.map((movie) => (
-                    <div key={movie.movie_id}>
-                      <MovieCard {...movie} />
-                      <button onClick={() => handleAddMovie(movie.movie_id)}>
-                        Add to List
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <textarea
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                placeholder="Description"
+              />
+              <input
+                type="text"
+                value={formData.picture_url}
+                onChange={(e) =>
+                  setFormData({ ...formData, picture_url: e.target.value })
+                }
+                placeholder="Image URL"
+              />
+              <button onClick={handleUpdate}>Save</button>
+              <button onClick={() => setIsEditing(false)}>Cancel</button>
             </div>
-          </div>
-        )}
-
-        <div className="movie-grid">
-          {list.movies.map((movie) => (
-            <div key={movie.movie_id} className="movie-card-wrapper">
-              <MovieCard {...movie} />
+          ) : (
+            <div className="list-detail-header">
+              <img
+                src={list.picture_url}
+                alt={list.title}
+                className="list-detail-image"
+              />
+              <h1>{list.title}</h1>
+              <p>{list.description}</p>
               <button
-                className="remove-movie-btn"
-                onClick={() => handleRemoveMovie(movie.movie_id)}
+                onClick={() => setIsEditing(true)}
+                className="primary-btn"
               >
-                Remove
+                Edit
               </button>
             </div>
-          ))}
-        </div>
-        <div className="add-movie-form">
-          <button
-            onClick={() => setShowMoviePopup(true)}
-            className="primary-btn"
-          >
-            Add Movie
-          </button>
-        </div>
-      </main>
+          )}
+
+          {showMoviePopup && (
+            <div className="movie-popup">
+              <div className="movie-popup-content">
+                <input
+                  type="text"
+                  placeholder="Search movies..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <button onClick={handleSearchMovies}>Search</button>
+                <button onClick={() => setShowMoviePopup(false)}>Close</button>
+                {loading ? (
+                  <Loader />
+                ) : (
+                  <div className="movie-grid">
+                    {searchResults.map((movie) => (
+                      <div key={movie.movie_id} className="movie-search-card">
+                        <MovieCard {...movie} />
+                        {list.movies.some(
+                          (m) => m.movie_id === movie.movie_id
+                        ) && <span className="added-badge">Added</span>}
+                        <button
+                          onClick={() => handleAddMovie(movie.movie_id)}
+                          disabled={list.movies.some(
+                            (m) => m.movie_id === movie.movie_id
+                          )}
+                        >
+                          Add to List
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="movie-grid">
+            {list.movies.map((movie) => (
+              <div key={movie.movie_id} className="movie-card-wrapper">
+                <MovieCard {...movie} />
+                <button
+                  className="remove-movie-btn"
+                  onClick={() => handleRemoveMovie(movie.movie_id)}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+          <div className="add-movie-form">
+            <button
+              onClick={() => setShowMoviePopup(true)}
+              className="primary-btn"
+            >
+              Add Movie
+            </button>
+          </div>
+        </main>
+      )}
     </div>
   );
 };

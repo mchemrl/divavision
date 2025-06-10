@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "../axiosConfig";
 import { useNavigate } from "react-router-dom";
-import "./UserPage.css";
 import "./DiscoverPage.css";
 import Navigation from "../components/Navigation";
 import MovieCard from "../components/MovieCard";

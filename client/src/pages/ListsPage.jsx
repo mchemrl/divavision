@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../axiosConfig";
 import { useNavigate } from "react-router-dom";
 import Navigation from "../components/Navigation";
 import "./ListsPage.css";
@@ -28,7 +28,7 @@ const ListsPage = () => {
 
   const handleDelete = async (list_id) => {
     try {
-      await axios.delete(`http://localhost:3000/list/${list_id}`);
+      await axios.delete(`http://localhost:5000/list/${list_id}`);
       setLists(lists.filter((list) => list.list_id !== list_id));
     } catch (err) {
       console.error("Failed to delete list", err);
