@@ -104,7 +104,7 @@ def add_fav():
     if not movie_id:
         return jsonify({'error': 'movie_id is required'}), 400
 
-    add_fav_movie(movie_id)
+    add_fav_movie(user_id, movie_id)
     return jsonify({'message': 'movie added to list'}), 201
 
 

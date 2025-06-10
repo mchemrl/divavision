@@ -7,6 +7,7 @@ rec = Blueprint('recommendations', __name__)
 @rec.route('/', methods=['GET'])
 def recommend():
     user_id = session.get('user_id')
+
     movie_id = request.args.get("movie_id", type=int)
 
     if user_id:
