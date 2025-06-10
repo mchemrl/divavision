@@ -34,7 +34,10 @@ def delete_list(user_id, list_id):
                 where list_id = %s and user_id = %s
                 returning list_id
             """, (list_id, user_id))
+            result = cur.fetchone()
             conn.commit()
+
+            return result
 
 def change_list(list_id, user_id, title, description=None, picture_url=None):
     with get_connection() as conn:

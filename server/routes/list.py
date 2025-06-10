@@ -31,7 +31,9 @@ def remove_list(list_id):
     if not user_id:
         return jsonify({'error': 'unauthorized'}), 401
 
-    delete_list(list_id, user_id)
+    result = delete_list(user_id, list_id)
+    if not result:
+        return jsonify({'error': 'list not found or unauthorized'}), 404
 
     return jsonify({'message': 'list deleted'}), 200
 
