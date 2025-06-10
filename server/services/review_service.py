@@ -3,19 +3,6 @@ from ..services.achievement_service import award_badge_if_earned
 from ..services.list_service import add_watched_movie
 from ..utils.db import get_connection
 
-def recalculate_avg_rating(movie_id):
-    with get_connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                update movies
-                set avg_user_rating = (
-                    select round(avg(rating)::numeric, 2)
-                    from reviews
-                    where movie_id = %s
-                )
-                where movie_id = %s
-            """, (movie_id, movie_id))
-
 def create_review(user_id, movie_id, rating, review_text=None):
     with get_connection() as conn:
         with conn.cursor() as cur:
@@ -41,45 +28,39 @@ def create_review(user_id, movie_id, rating, review_text=None):
 
             add_watched_movie(user_id, movie_id)
 
-            recalculate_avg_rating(movie_id)
+            cur.execute("""
+                update movies
+                set avg_user_rating = (
+                    select round(avg(rating)::numeric, 2)
+                    from reviews
+                    where movie_id = %s
+                )
+                where movie_id = %s
+            """, (movie_id, movie_id))
+
             award_badge_if_earned(user_id)
             conn.commit()
 
-def change_review(review_id, user_id, rating, review_text=None):
+def change_review(review_id, user_id, rating, review_text = None):
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                select movie_id from reviews where review_id = %s and user_id = %s
-            """, (review_id, user_id))
-            movie = cur.fetchone()
-            if not movie:
-                raise ValueError("Review not found or user unauthorized")
-            movie_id = movie[0]
-            cur.execute("""
-                update reviews
-                set rating = %s,
-                    review_text = %s
-                where review_id = %s and user_id = %s
-            """, (rating, review_text, review_id, user_id))
-        recalculate_avg_rating(movie_id)
-        conn.commit()
+                   update reviews
+                   set rating = %s,
+                       review_text = %s
+                   where review_id = %s and user_id = %s
+               """, (rating, review_text, review_id, user_id))
+            conn.commit()
 
 def delete_review(review_id, user_id):
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                select movie_id from reviews where review_id = %s and user_id = %s
-            """, (review_id, user_id))
-            movie = cur.fetchone()
-            if not movie:
-                raise ValueError("Review not found or user unauthorized")
-            movie_id = movie[0]
-            cur.execute("""
                 delete from reviews
                 where review_id = %s and user_id = %s
+                returning review_id
             """, (review_id, user_id))
-        recalculate_avg_rating(movie_id)
-        conn.commit()
+            conn.commit()
 
 def fetch_reviews(user_id=None, movie_id=None, keyword=None, rating_min=None, rating_max=None,
                   sort_by='created_at', limit=5):
