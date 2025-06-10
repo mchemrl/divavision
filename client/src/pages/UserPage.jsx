@@ -8,16 +8,16 @@ import Loader from "../components/Loader";
 
 const MovieCard = ({ title, rating }) => (
   <div className="movie-card">
-    <div className="movie-title">{title}</div>
+    <div className="movie-title">{title || "Untitled Movie"}</div>
     <div className="movie-rating">
-      <Star className="w-4 h-4 mr-1" /> {rating}
+      <Star className="w-4 h-4 mr-1" /> {rating ?? "N/A"}
     </div>
   </div>
 );
 
 const Stat = ({ label, value }) => (
   <div className="stat-card">
-    <div className="stat-value">{value}</div>
+    <div className="stat-value">{value ?? 0}</div>
     <div className="stat-label">{label}</div>
   </div>
 );
@@ -33,14 +33,26 @@ const UserPage = () => {
   const [reviews, setReviews] = useState([]);
   const [activeTab, setActiveTab] = useState("watched");
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({
+    username: "",
+    tagline: "",
+    profile_pic_url: "",
+  });
+  const [editError, setEditError] = useState(null);
 
   const isOwnProfile = user?.id === loggedInUserId;
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
       try {
         const profileRes = await axios.get("/profile/me");
-        const currentUserId = profileRes.data.id;
+        const currentUserId = profileRes.data?.id;
+        if (!currentUserId)
+          throw new Error("Failed to fetch logged-in user ID");
         setLoggedInUserId(currentUserId);
 
         const targetId = user_id || currentUserId;
@@ -61,14 +73,25 @@ const UserPage = () => {
           axios.get(`http://localhost:5000/review/`),
         ]);
 
-        setUser(userRes.data);
-        setStats(statsRes.data);
-        setWatchedMovies(watchedRes.data.watched || []);
-        setFavorites(favoritesRes.data.favorites || []);
-        setLists(listsRes.data.lists || []);
-        setReviews(reviewsRes.data.reviews || []);
+        setUser(userRes.data || null);
+        setStats(statsRes.data || {});
+        setWatchedMovies(
+          Array.isArray(watchedRes.data?.watched) ? watchedRes.data.watched : []
+        );
+        setFavorites(
+          Array.isArray(favoritesRes.data?.favorites)
+            ? favoritesRes.data.favorites
+            : []
+        );
+        setLists(
+          Array.isArray(listsRes.data?.lists) ? listsRes.data.lists : []
+        );
+        setReviews(
+          Array.isArray(reviewsRes.data?.reviews) ? reviewsRes.data.reviews : []
+        );
       } catch (err) {
         console.error("Failed to fetch user data", err);
+        setError("Failed to load user data. Please try again later.");
       } finally {
         setIsLoading(false);
       }
@@ -76,6 +99,34 @@ const UserPage = () => {
 
     fetchData();
   }, [user_id]);
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    if (!editForm.username.trim()) {
+      setEditError("Username cannot be empty");
+      return;
+    }
+    try {
+      await axios.put("http://localhost:5000/profile/me", editForm);
+      setUser({ ...user, ...editForm });
+      setIsEditing(false);
+      setEditError(null);
+    } catch (err) {
+      console.error(err);
+      setEditError("Failed to update profile. Please try again.");
+    }
+  };
+
+  const handleEditChange = (e) => {
+    setEditForm({ ...editForm, [e.target.name]: e.target.value });
+  };
+
+  const favoriteGenres = stats?.genres
+    ? Object.entries(stats.genres)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 3)
+        .map(([genre]) => genre)
+        .join(", ") || "Not enough data"
+    : "Not enough data";
 
   const renderActiveTabContent = () => {
     let dataToRender = [];
@@ -97,13 +148,17 @@ const UserPage = () => {
         dataToRender = [];
     }
 
+    if (dataToRender.length === 0) {
+      return <div className="no-data">No {activeTab} found.</div>;
+    }
+
     if (activeTab === "lists") {
       return (
         <div className="list-grid">
           {dataToRender.map((list) => (
-            <div key={list.id} className="list-card">
-              <h3>{list.name}</h3>
-              <p>{list.description}</p>
+            <div key={list.id || list.name} className="list-card">
+              <h3>{list.name || "Untitled List"}</h3>
+              <p>{list.description || "No description available"}</p>
             </div>
           ))}
         </div>
@@ -114,12 +169,12 @@ const UserPage = () => {
       return (
         <div className="review-grid">
           {dataToRender.map((review) => (
-            <div key={review.id} className="review-card">
-              <h3>{review.movieTitle}</h3>
+            <div key={review.id || review.movieTitle} className="review-card">
+              <h3>{review.movieTitle || "Unknown Movie"}</h3>
               <p>
-                <strong>Rating:</strong> {review.rating}
+                <strong>Rating:</strong> {review.rating ?? "N/A"}
               </p>
-              <p>{review.content}</p>
+              <p>{review.content || "No review content"}</p>
             </div>
           ))}
         </div>
@@ -146,21 +201,86 @@ const UserPage = () => {
         <main className="main-content">
           <Loader />
         </main>
+      ) : error ? (
+        <main className="main-content">
+          <div className="error-message">{error}</div>
+        </main>
       ) : !user || !stats ? (
         <main className="main-content">
-          <div className="error-message">Failed to load user data.</div>
+          <div className="error-message">No user data available.</div>
         </main>
       ) : (
         <main className="main-content">
           <div className="profile-section fade-in">
-            <div className="profile-avatar" />
+            <div className="profile-avatar">
+              {user.profile_pic_url ? (
+                <img
+                  src={user.profile_pic_url}
+                  alt="Profile"
+                  className="avatar-image"
+                />
+              ) : (
+                <div className="avatar-placeholder" />
+              )}
+            </div>
             <div>
-              <h1 className="profile-name">{user.username}</h1>
-              <p className="profile-bio">
-                {user.bio || "Lover of sad indie films 🎬"}
-              </p>
-              {isOwnProfile && (
-                <button className="edit-profile-btn">Edit Profile</button>
+              {isEditing && isOwnProfile ? (
+                <div className="edit-form">
+                  <form onSubmit={handleEditSubmit}>
+                    <input
+                      type="text"
+                      name="username"
+                      value={editForm.username}
+                      onChange={handleEditChange}
+                      placeholder="Username"
+                      className="edit-input"
+                    />
+                    <input
+                      type="text"
+                      name="tagline"
+                      value={editForm.tagline}
+                      onChange={handleEditChange}
+                      placeholder="Tagline"
+                      className="edit-input"
+                    />
+                    <input
+                      type="url"
+                      name="profile_pic_url"
+                      value={editForm.profile_pic_url}
+                      onChange={handleEditChange}
+                      placeholder="Profile Picture URL"
+                      className="edit-input"
+                    />
+                    {editError && <div className="edit-error">{editError}</div>}
+                    <button type="submit" className="save-btn">
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      className="cancel-btn"
+                      onClick={() => setIsEditing(false)}
+                    >
+                      Cancel
+                    </button>
+                  </form>
+                </div>
+              ) : (
+                <>
+                  <h1 className="profile-name">
+                    {user.username || "Unknown User"}
+                  </h1>
+                  <p className="profile-bio">
+                    {user.tagline || "Lover of sad indie films 🎬"}
+                  </p>
+                  {isOwnProfile && (
+                    <button
+                      className="edit-profile-btn"
+                      onClick={() => setIsEditing(true)}
+                    >
+                      Edit Profile
+                    </button>
+                  )}
+                </>
               )}
             </div>
             <div className="profile-stats">
@@ -168,12 +288,24 @@ const UserPage = () => {
               <Stat label="Favorites" value={stats.favorites} />
               <Stat label="Reviews" value={stats.reviews} />
               <Stat label="Lists" value={stats.lists} />
+              <Stat label="Followers" value={stats.followers} />
+              <Stat label="Following" value={stats.following} />
             </div>
           </div>
 
           <div className="summary-cards fade-in">
-            <div className="summary-card">Favorite Genres</div>
-            <div className="summary-card">Movies Watched Over Time</div>
+            <div className="summary-card">
+              <h3>Favorite Genres</h3>
+              <p>Not enough data</p>
+            </div>
+            <div className="summary-card">
+              <h3>Movies Watched Over Time</h3>
+              <p>
+                {stats.watched
+                  ? `${stats.watched} movies watched`
+                  : "No data available"}
+              </p>
+            </div>
           </div>
 
           <div className="tabs-section fade-in">
