@@ -9,6 +9,7 @@ import UserPage from "./pages/UserPage";
 import MoviePage from "./pages/MoviePage";
 import ListsPage from "./pages/ListsPage";
 import ListPage from "./pages/ListPage";
+import FeedPage from "./pages/FeedPage";
 import axios from "axios";
 
 export default function App() {
@@ -24,6 +25,7 @@ export default function App() {
         <Route path="/user/:user_id" element={<UserPage />} />
         <Route path="/movie/:movie_id" element={<MoviePage />} />
         <Route path="/lists" element={<ListsPage />} />
+        <Route path="/feed" element={<FeedPage />} />
         <Route path="/list/:list_id" element={<ListPage />} />
       </Routes>
     </Router>

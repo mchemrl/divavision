@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Star } from "lucide-react";
 import axios from "../axiosConfig";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import "./UserPage.css";
 import Navigation from "../components/Navigation";
 import Loader from "../components/Loader";
@@ -11,17 +11,6 @@ const MovieCard = ({ title, rating }) => (
     <div className="movie-title">{title}</div>
     <div className="movie-rating">
       <Star className="w-4 h-4 mr-1" /> {rating}
-    </div>
-  </div>
-);
-
-const TopRatedMovies = ({ movies }) => (
-  <div className="top-rated-section">
-    <h2 className="section-title">Top-Rated Movies</h2>
-    <div className="movie-grid">
-      {movies.map((movie) => (
-        <MovieCard key={movie.title} {...movie} />
-      ))}
     </div>
   </div>
 );
@@ -40,6 +29,9 @@ const UserPage = () => {
   const [stats, setStats] = useState(null);
   const [watchedMovies, setWatchedMovies] = useState([]);
   const [favorites, setFavorites] = useState([]);
+  const [lists, setLists] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [activeTab, setActiveTab] = useState("watched");
   const [isLoading, setIsLoading] = useState(true);
 
   const isOwnProfile = user?.id === loggedInUserId;
@@ -48,23 +40,33 @@ const UserPage = () => {
     const fetchData = async () => {
       try {
         const profileRes = await axios.get("/profile/me");
-        setLoggedInUserId(profileRes.data.id);
+        const currentUserId = profileRes.data.id;
+        setLoggedInUserId(currentUserId);
 
-        const targetId = user_id || profileRes.data.id;
+        const targetId = user_id || currentUserId;
 
-        const [userRes, statsRes, watchedRes, favoritesRes] = await Promise.all(
-          [
-            axios.get(`/profile/${targetId}`),
-            axios.get(`/profile/${targetId}/stats`),
-            axios.get(`/profile/${targetId}/watched`),
-            axios.get(`/profile/${targetId}/favorites`),
-          ]
-        );
+        const [
+          userRes,
+          statsRes,
+          watchedRes,
+          favoritesRes,
+          listsRes,
+          reviewsRes,
+        ] = await Promise.all([
+          axios.get(`http://localhost:5000/profile/${targetId}`),
+          axios.get(`http://localhost:5000/profile/${targetId}/stats`),
+          axios.get(`http://localhost:5000/profile/${targetId}/watched`),
+          axios.get(`http://localhost:5000/profile/${targetId}/favorites`),
+          axios.get(`http://localhost:5000/profile/${targetId}/lists`),
+          axios.get(`http://localhost:5000/review/`),
+        ]);
 
         setUser(userRes.data);
         setStats(statsRes.data);
-        setWatchedMovies(watchedRes.data.watched);
-        setFavorites(favoritesRes.data.favorites);
+        setWatchedMovies(watchedRes.data.watched || []);
+        setFavorites(favoritesRes.data.favorites || []);
+        setLists(listsRes.data.lists || []);
+        setReviews(reviewsRes.data.reviews || []);
       } catch (err) {
         console.error("Failed to fetch user data", err);
       } finally {
@@ -75,13 +77,78 @@ const UserPage = () => {
     fetchData();
   }, [user_id]);
 
+  const renderActiveTabContent = () => {
+    let dataToRender = [];
+
+    switch (activeTab) {
+      case "watched":
+        dataToRender = watchedMovies;
+        break;
+      case "favorites":
+        dataToRender = favorites;
+        break;
+      case "lists":
+        dataToRender = lists;
+        break;
+      case "reviews":
+        dataToRender = reviews;
+        break;
+      default:
+        dataToRender = [];
+    }
+
+    if (activeTab === "lists") {
+      return (
+        <div className="list-grid">
+          {dataToRender.map((list) => (
+            <div key={list.id} className="list-card">
+              <h3>{list.name}</h3>
+              <p>{list.description}</p>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (activeTab === "reviews") {
+      return (
+        <div className="review-grid">
+          {dataToRender.map((review) => (
+            <div key={review.id} className="review-card">
+              <h3>{review.movieTitle}</h3>
+              <p>
+                <strong>Rating:</strong> {review.rating}
+              </p>
+              <p>{review.content}</p>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    return (
+      <div className="movie-grid fade-in">
+        {dataToRender.map((movie) => (
+          <MovieCard
+            key={movie.id || movie.title}
+            title={movie.title}
+            rating={movie.rating}
+          />
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="user-page-container">
       <Navigation />
-
       {isLoading ? (
         <main className="main-content">
           <Loader />
+        </main>
+      ) : !user || !stats ? (
+        <main className="main-content">
+          <div className="error-message">Failed to load user data.</div>
         </main>
       ) : (
         <main className="main-content">
@@ -109,31 +176,34 @@ const UserPage = () => {
             <div className="summary-card">Movies Watched Over Time</div>
           </div>
 
-          <div className="top-rated-container fade-in">
-            <TopRatedMovies
-              movies={favorites.map((fav) => ({
-                title: fav.title,
-                rating: fav.rating,
-              }))}
-            />
-          </div>
-
           <div className="tabs-section fade-in">
             <div className="tabs">
-              <button className="tab-active">Watched Movies</button>
-              <button className="tab">Lists</button>
-              <button className="tab">Favorites</button>
-              <button className="tab">Recent Reviews</button>
+              <button
+                className={activeTab === "watched" ? "tab-active" : "tab"}
+                onClick={() => setActiveTab("watched")}
+              >
+                Watched Movies
+              </button>
+              <button
+                className={activeTab === "lists" ? "tab-active" : "tab"}
+                onClick={() => setActiveTab("lists")}
+              >
+                Lists
+              </button>
+              <button
+                className={activeTab === "favorites" ? "tab-active" : "tab"}
+                onClick={() => setActiveTab("favorites")}
+              >
+                Favorites
+              </button>
+              <button
+                className={activeTab === "reviews" ? "tab-active" : "tab"}
+                onClick={() => setActiveTab("reviews")}
+              >
+                Recent Reviews
+              </button>
             </div>
-            <div className="movie-grid fade-in">
-              {/* {watchedMovies.map((movie) => (
-                <MovieCard
-                  key={movie.title}
-                  title={movie.title}
-                  rating={movie.rating}
-                />
-              ))} */}
-            </div>
+            {renderActiveTabContent()}
           </div>
         </main>
       )}
