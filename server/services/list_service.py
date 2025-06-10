@@ -168,7 +168,6 @@ def add_fav_movie(user_id, movie_id):
 
 def add_watched_movie(user_id, movie_id):
     watched_list_id = get_def_list_id(user_id, "Watched")
-    print(watched_list_id)
     add_movie(watched_list_id, movie_id)
 
 def get_def_list_id(user_id, name):

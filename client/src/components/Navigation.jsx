@@ -54,7 +54,10 @@ const Navigation = () => {
           <button className="nav-button" onClick={() => navigate("/user")}>
             <User className="icon" /> Profile
           </button>
-          <button className="nav-button">
+          <button
+            onClick={() => navigate("/achievments")}
+            className="nav-button"
+          >
             <Trophy className="icon" /> Achievements
           </button>
         </nav>
