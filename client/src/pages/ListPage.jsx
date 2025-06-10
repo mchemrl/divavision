@@ -87,7 +87,7 @@ const ListPage = () => {
   };
 
   return (
-    <div className="list-page">
+    <div className="listt-page">
       <Navigation />
       {initialLoading ? (
         <main className="main-content">
@@ -95,7 +95,7 @@ const ListPage = () => {
         </main>
       ) : (
         <main className="main-content">
-          <section className="list-header-section">
+          <section className="listt-header-section">
             {isEditing ? (
               <div className="edit-form">
                 <input
@@ -137,15 +137,15 @@ const ListPage = () => {
                 </div>
               </div>
             ) : (
-              <div className="list-header">
+              <div className="listt-header">
                 <img
                   src={list.picture_url}
                   alt={list.title}
-                  className="list-image"
+                  className="listt-image"
                 />
-                <div className="list-info">
-                  <h1 className="list-title">{list.title}</h1>
-                  <p className="list-description">{list.description}</p>
+                <div className="listt-info">
+                  <h1 className="listt-title">{list.title}</h1>
+                  <p className="listt-description">{list.description}</p>
                   <button
                     onClick={() => setIsEditing(true)}
                     className="edit-btnn"
