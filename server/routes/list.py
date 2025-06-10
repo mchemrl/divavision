@@ -91,9 +91,9 @@ def add_movie_to_list(list_id):
     add_movie(list_id, movie_id)
     return jsonify({'message': 'movie added to list'}), 201
 
-@list.route('/<int:list_id>/movies', methods=['POST'])
+@list.route('/favorites', methods=['POST'])
 @login_required
-def add_fav(movie_id):
+def add_fav():
     user_id = session.get('user_id')
     if not user_id:
         return jsonify({'error': 'unauthorized'}), 401

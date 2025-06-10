@@ -65,12 +65,12 @@ const UserPage = () => {
           listsRes,
           reviewsRes,
         ] = await Promise.all([
-          axios.get(`http://localhost:5000/profile/${targetId}`),
-          axios.get(`http://localhost:5000/profile/${targetId}/stats`),
-          axios.get(`http://localhost:5000/profile/${targetId}/watched`),
-          axios.get(`http://localhost:5000/profile/${targetId}/favorites`),
-          axios.get(`http://localhost:5000/profile/${targetId}/lists`),
-          axios.get(`http://localhost:5000/review/`, {
+          axios.get(`/profile/${targetId}`),
+          axios.get(`/profile/${targetId}/stats`),
+          axios.get(`/profile/${targetId}/watched`),
+          axios.get(`/profile/${targetId}/favorites`),
+          axios.get(`/profile/${targetId}/lists`),
+          axios.get(`/review/`, {
             params: { user_id: targetId, limit: 10 },
           }),
         ]);

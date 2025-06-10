@@ -127,10 +127,10 @@ def fetch_stats(user_id):
           (select count(*) from followers f where f.follower_id = u.user_id) as following_count,
           (select count(li.list_item_id)
            from lists l join list_items li on l.list_id = li.list_id
-           where l.user_id = u.user_id and l.title = 'watched') as watched_count,
+           where l.user_id = u.user_id and l.title = 'Watched') as watched_count,
           (select count(li.list_item_id)
            from lists l join list_items li on l.list_id = li.list_id
-           where l.user_id = u.user_id and l.title = 'favorites') as favorites_count,
+           where l.user_id = u.user_id and l.title = 'Favorites') as favorites_count,
           (select count(*) from reviews r where r.user_id = u.user_id) as reviews_count
         from users u
         where u.user_id = %s
