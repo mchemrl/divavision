@@ -1,8 +1,8 @@
 from flask import Blueprint, request, session, g, jsonify, url_for, redirect
 from werkzeug.security import check_password_hash
-from server.services.auth_service import fetch_user_by_id, fetch_user_by_identifier, create_user, create_user_if_not_exists, create_basic_lists
-from server.utils.oauth import oauth
-from server.utils.email_verification import generate_verification_code, send_verification_email, store_verification_code, verification_codes
+from ..services.auth_service import fetch_user_by_id, fetch_user_by_identifier, create_user, create_user_if_not_exists, create_basic_lists
+from ..utils.oauth import oauth
+from ..utils.email_verification import generate_verification_code, send_verification_email, store_verification_code, verification_codes
 
 
 auth = Blueprint('auth', __name__)
@@ -112,4 +112,4 @@ def authorize_google():
     session.clear()
     session['user_id'] = user_id
 
-    return redirect(f"http://localhost:3000/login?user_id={user_id}&username={username}")
+    return redirect(f"http://localhost:3000/discover?user_id={user_id}&username={username}")

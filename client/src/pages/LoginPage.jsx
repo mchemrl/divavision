@@ -16,26 +16,6 @@ export default function LoginPage() {
     }
   }, [navigate]);
 
-  useEffect(() => {
-  const token = localStorage.getItem("authToken");
-  if (token) {
-    navigate("/user");
-    return;
-  }
-
-  const urlParams = new URLSearchParams(window.location.search);
-  const userId = urlParams.get('user_id');
-  const username = urlParams.get('username');
-
-  if (userId && username) {
-    localStorage.setItem('user_id', userId);
-    localStorage.setItem('username', username);
-
-    window.history.replaceState({}, document.title, window.location.pathname);
-    navigate("/user");
-  }
-}, [navigate]);
-
 const handleLoginClick = async (e) => {
   e.preventDefault();
   setLoading(true);
@@ -55,8 +35,7 @@ const handleLoginClick = async (e) => {
 
     const sessionCheck = await axios.get("/profile/me");
     console.log("Session check user:", sessionCheck.data);
-    localStorage.setItem("user_id", sessionCheck.data.user_id);
-    localStorage.setItem("username", sessionCheck.data.username);
+
     navigate("/user");
   } catch (err) {
     if (err.response?.data?.error === "user logged in") {
@@ -70,7 +49,7 @@ const handleLoginClick = async (e) => {
 };
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://127.0.0.1:5000/auth/login/google";
+    window.location.href = "/login/google";
   };
 
   return (

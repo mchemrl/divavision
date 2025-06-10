@@ -58,7 +58,7 @@ def get_user_lists(user_id):
 
 @profile.route('/<int:user_id>/favorites', methods=['GET'])
 def get_user_favorites(user_id):
-    user_favs = fetch_user_lists_by_filter(user_id, is_default=True, title="Favourites")
+    user_favs = fetch_list_by_id(get_def_list_id(user_id, "Favourites"))
     return jsonify({'favorites': user_favs}), 200
 
 

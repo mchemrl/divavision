@@ -24,4 +24,3 @@ def create_app():
     from server.routes import routes
     app.register_blueprint(routes)
     return app
-

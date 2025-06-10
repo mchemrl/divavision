@@ -42,7 +42,7 @@ const Navigation = () => {
           <Star className="icon" /> DivaVision
         </h1>
         <nav className="nav-menu">
-          <button className="nav-button">
+          <button className="nav-button" onClick={() => navigate("/feed")}>
             <Home className="icon" /> Feed
           </button>
           <button onClick={() => navigate("/discover")} className="nav-button">

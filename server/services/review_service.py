@@ -25,7 +25,9 @@ def create_review(user_id, movie_id, rating, review_text=None):
                             insert into feed_events (user_id, event_type, target_id, event_data)
                             values (%s, %s, %s, %s)
                             """, (user_id, "write_review", review_id, json.dumps({'user_id': user_id, "movie_id": movie_id})))
+
             add_watched_movie(user_id, movie_id)
+
             cur.execute("""
                 update movies
                 set avg_user_rating = (
@@ -35,6 +37,7 @@ def create_review(user_id, movie_id, rating, review_text=None):
                 )
                 where movie_id = %s
             """, (movie_id, movie_id))
+
             award_badge_if_earned(user_id)
             conn.commit()
 
@@ -86,12 +89,13 @@ def fetch_reviews(user_id=None, movie_id=None, keyword=None, rating_min=None, ra
     where_clause = f"WHERE {' AND '.join(filters)}" if filters else ""
 
     query = f"""
-        SELECT r.review_id, r.user_id, u.username, r.movie_id, r.rating, r.review_text, r.created_at
-        FROM reviews r
-        JOIN users u ON r.user_id = u.user_id
+        select r.review_id, r.user_id, u.username, r.movie_id, r.rating, r.review_text, r.created_at, m.title
+        from reviews r
+        join users u on r.user_id = u.user_id
+        join movies m on r.movie_id = m.movie_id
         {where_clause}
-        ORDER BY r.{sort_by} DESC
-        LIMIT %s
+        order by r.{sort_by} desc
+        limit %s
     """
     values.append(limit)
 
@@ -108,6 +112,7 @@ def fetch_reviews(user_id=None, movie_id=None, keyword=None, rating_min=None, ra
                     'rating': row[4],
                     'review_text': row[5],
                     'created_at': row[6].strftime("%Y-%m-%d"),
+                    'title': row[7]
                 } for row in rows
             ]
 
