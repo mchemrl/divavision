@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "../axiosConfig";
+import axios from "axios";
 import Loader from "../components/Loader";
 import Navigation from "../components/Navigation";
 import "./FeedPage.css";
@@ -16,8 +16,8 @@ export default function FeedPage() {
         setIsLoading(true);
 
         const [feedRes, profileRes] = await Promise.all([
-          axios.get("/feed/"),
-          axios.get("/profile/me"),
+          axios.get("http://localhost:5000/feed/"),
+          axios.get("http://localhost:5000/profile/me"),
         ]);
 
         if (typeof feedRes.data === "string") {
