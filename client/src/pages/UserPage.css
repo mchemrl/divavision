@@ -5,6 +5,19 @@
   font-family: "Inter", sans-serif;
   color: #4c1d95;
 }
+.avatar-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: #ccc;
+}
 
 /* Sidebar */
 .sidebar {
@@ -228,4 +241,51 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+.review-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.review-card {
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.review-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.review-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  color: #6b21a8;
+}
+.review-card h3:hover {
+  text-decoration-line: underline;
+  cursor: pointer;
+}
+
+.review-card p {
+  font-size: 14px;
+  color: #555;
+  margin: 4px 0;
+}
+
+.review-card p strong {
+  color: #6b21a8;
+}
+
+.review-card p:empty::before {
+  content: "No review text";
+  color: #999;
+  font-style: italic;
 }
