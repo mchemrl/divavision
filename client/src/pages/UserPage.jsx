@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Star } from "lucide-react";
 import axios from "../axiosConfig";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import "./UserPage.css";
 import Navigation from "../components/Navigation";
 import Loader from "../components/Loader";
@@ -41,7 +41,7 @@ const UserPage = () => {
     profile_pic_url: "",
   });
   const [editError, setEditError] = useState(null);
-
+  const navigate = useNavigate();
   const isOwnProfile = user?.id === loggedInUserId;
 
   useEffect(() => {
@@ -70,7 +70,9 @@ const UserPage = () => {
           axios.get(`http://localhost:5000/profile/${targetId}/watched`),
           axios.get(`http://localhost:5000/profile/${targetId}/favorites`),
           axios.get(`http://localhost:5000/profile/${targetId}/lists`),
-          axios.get(`http://localhost:5000/review/`),
+          axios.get(`http://localhost:5000/review/`, {
+            params: { user_id: targetId, limit: 10 },
+          }),
         ]);
 
         setUser(userRes.data || null);
@@ -86,11 +88,14 @@ const UserPage = () => {
         setLists(
           Array.isArray(listsRes.data?.lists) ? listsRes.data.lists : []
         );
-        setReviews(
-          Array.isArray(reviewsRes.data?.reviews) ? reviewsRes.data.reviews : []
-        );
+        setReviews(Array.isArray(reviewsRes.data) ? reviewsRes.data : []);
+        setEditForm({
+          username: userRes.data?.username || "",
+          tagline: userRes.data?.tagline || "",
+          profile_pic_url: userRes.data?.profile_pic_url || "",
+        });
       } catch (err) {
-        console.error("Failed to fetch user data", err);
+        console.error(err);
         setError("Failed to load user data. Please try again later.");
       } finally {
         setIsLoading(false);
@@ -99,6 +104,7 @@ const UserPage = () => {
 
     fetchData();
   }, [user_id]);
+
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     if (!editForm.username.trim()) {
@@ -106,7 +112,7 @@ const UserPage = () => {
       return;
     }
     try {
-      await axios.put("http://localhost:5000/profile/me", editForm);
+      await axios.put("/profile/me", editForm);
       setUser({ ...user, ...editForm });
       setIsEditing(false);
       setEditError(null);
@@ -119,14 +125,6 @@ const UserPage = () => {
   const handleEditChange = (e) => {
     setEditForm({ ...editForm, [e.target.name]: e.target.value });
   };
-
-  const favoriteGenres = stats?.genres
-    ? Object.entries(stats.genres)
-        .sort(([, a], [, b]) => b - a)
-        .slice(0, 3)
-        .map(([genre]) => genre)
-        .join(", ") || "Not enough data"
-    : "Not enough data";
 
   const renderActiveTabContent = () => {
     let dataToRender = [];
@@ -156,8 +154,15 @@ const UserPage = () => {
       return (
         <div className="list-grid">
           {dataToRender.map((list) => (
-            <div key={list.id || list.name} className="list-card">
-              <h3>{list.name || "Untitled List"}</h3>
+            <div key={list.list_id || list.title} className="list-card">
+              <h3 onClick={() => navigate(`/list/${list.list_id}`)}>
+                {list.title || "Untitled List"}
+              </h3>
+              <img
+                src={list.picture_url}
+                alt={list.title}
+                className="list-image"
+              />
               <p>{list.description || "No description available"}</p>
             </div>
           ))}
@@ -169,12 +174,14 @@ const UserPage = () => {
       return (
         <div className="review-grid">
           {dataToRender.map((review) => (
-            <div key={review.id || review.movieTitle} className="review-card">
-              <h3>{review.movieTitle || "Unknown Movie"}</h3>
+            <div key={review.review_id} className="review-card">
+              <h3
+                onClick={() => navigate(`/movie/${review.movie_id}`)}
+              >{`Movie ID: ${review.movie_id}`}</h3>
               <p>
                 <strong>Rating:</strong> {review.rating ?? "N/A"}
               </p>
-              <p>{review.content || "No review content"}</p>
+              <p>{review.review_text || "No review text"}</p>
             </div>
           ))}
         </div>
