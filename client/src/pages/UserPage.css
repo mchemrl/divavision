@@ -341,26 +341,41 @@
 /* Movie Grid */
 .movie-gridd {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 1rem;
-  padding: 1rem;
 }
 
-.movie-card {
+.movie-cardd {
   background: rgba(255, 255, 255, 0.8);
-  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
   padding: 1rem;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
-  backdrop-filter: blur(8px);
-  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 100%;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.movie-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+.movie-cardd:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.movie-title {
+.movie-posterrr {
+  width: 80px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 0.25rem;
+  flex-shrink: 0;
+}
+
+.movie-detailss {
+  flex-grow: 1;
+  min-width: 0; /* Allow shrinking */
+}
+
+.movie-titlee {
   font-size: 1.1rem;
   font-weight: 600;
   color: #4c1d95;
@@ -379,14 +394,14 @@
   text-decoration: underline;
 }
 
-.movie-rating {
+.movie-ratting {
   display: flex;
   align-items: center;
   color: #a855f7;
   font-size: 0.875rem;
 }
 
-.movie-rating svg {
+.movie-ratting svg {
   width: 16px;
   height: 16px;
   margin-right: 0.25rem;

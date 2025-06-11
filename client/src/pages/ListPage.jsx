@@ -20,10 +20,16 @@ const ListPage = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [loggedInUserId, setLoggedInUserId] = useState(null);
 
   useEffect(() => {
     const fetchList = async () => {
       try {
+        const profileRes = await axios.get("/profile/me");
+        const currentUserId = profileRes.data?.id;
+        if (!currentUserId)
+          throw new Error("Failed to fetch logged-in user ID");
+        setLoggedInUserId(currentUserId);
         setInitialLoading(true);
         const res = await axios.get(`/list/${list_id}`);
         setList(res.data.list);
@@ -85,9 +91,10 @@ const ListPage = () => {
       setLoading(false);
     }
   };
+  const isOwner = list?.user_id === loggedInUserId;
 
   return (
-    <div className="list-page">
+    <div className="listt-page">
       <Navigation />
       {initialLoading ? (
         <main className="main-content">
@@ -95,63 +102,115 @@ const ListPage = () => {
         </main>
       ) : (
         <main className="main-content">
-          {isEditing ? (
-            <div className="edit-form">
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) =>
-                  setFormData({ ...formData, title: e.target.value })
-                }
-                placeholder="Title"
-              />
-              <textarea
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                placeholder="Description"
-              />
-              <input
-                type="text"
-                value={formData.picture_url}
-                onChange={(e) =>
-                  setFormData({ ...formData, picture_url: e.target.value })
-                }
-                placeholder="Image URL"
-              />
-              <button onClick={handleUpdate}>Save</button>
-              <button onClick={() => setIsEditing(false)}>Cancel</button>
-            </div>
-          ) : (
-            <div className="list-detail-header">
-              <img
-                src={list.picture_url}
-                alt={list.title}
-                className="list-detail-image"
-              />
-              <h1>{list.title}</h1>
-              <p>{list.description}</p>
-              <button
-                onClick={() => setIsEditing(true)}
-                className="primary-btn"
-              >
-                Edit
-              </button>
-            </div>
-          )}
-
-          {showMoviePopup && (
-            <div className="movie-popup">
-              <div className="movie-popup-content">
+          <section className="listt-header-section">
+            {isEditing ? (
+              <div className="edit-form">
                 <input
                   type="text"
-                  placeholder="Search movies..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  value={formData.title}
+                  onChange={(e) =>
+                    setFormData({ ...formData, title: e.target.value })
+                  }
+                  placeholder="Title"
+                  className="edit-input"
                 />
-                <button onClick={handleSearchMovies}>Search</button>
-                <button onClick={() => setShowMoviePopup(false)}>Close</button>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
+                  placeholder="Description"
+                  className="edit-textarea"
+                />
+                <input
+                  type="text"
+                  value={formData.picture_url}
+                  onChange={(e) =>
+                    setFormData({ ...formData, picture_url: e.target.value })
+                  }
+                  placeholder="Image URL"
+                  className="edit-input"
+                />
+                <div className="edit-buttons">
+                  <button onClick={handleUpdate} className="save-btn">
+                    Save
+                  </button>
+                  <button
+                    onClick={() => setIsEditing(false)}
+                    className="cancel-btn"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="listt-header">
+                <img
+                  src={list.picture_url}
+                  alt={list.title}
+                  className="listt-image"
+                />
+                <div className="listt-info">
+                  <h1 className="listt-title">{list.title}</h1>
+                  <p className="listt-description">{list.description}</p>
+                  {isOwner && (
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="edit-btnn"
+                    >
+                      Edit
+                    </button>
+                  )}
+                  {isOwner && (
+                    <button
+                      onClick={() => setShowMoviePopup(true)}
+                      className="add-movie-btn"
+                    >
+                      Add Movie
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+          </section>
+
+          <section className="movie-section">
+            <div className="movie-grid">
+              {list.movies.map((movie) => (
+                <div key={movie.movie_id} className="movie-card-wrapper">
+                  <MovieCard {...movie} />
+                  <button
+                    className="remove-btn"
+                    onClick={() => handleRemoveMovie(movie.movie_id)}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {showMoviePopup && (
+            <div className="movie-popup-overlay">
+              <div className="movie-popup-content">
+                <div className="search-bar">
+                  <input
+                    type="text"
+                    placeholder="Search movies..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="search-input"
+                  />
+                  <button onClick={handleSearchMovies} className="search-btn">
+                    Search
+                  </button>
+                  <button
+                    onClick={() => setShowMoviePopup(false)}
+                    className="close-btn"
+                  >
+                    Close
+                  </button>
+                </div>
                 {loading ? (
                   <Loader />
                 ) : (
@@ -167,6 +226,7 @@ const ListPage = () => {
                           disabled={list.movies.some(
                             (m) => m.movie_id === movie.movie_id
                           )}
+                          className="add-btn"
                         >
                           Add to List
                         </button>
@@ -177,28 +237,6 @@ const ListPage = () => {
               </div>
             </div>
           )}
-
-          <div className="movie-grid">
-            {list.movies.map((movie) => (
-              <div key={movie.movie_id} className="movie-card-wrapper">
-                <MovieCard {...movie} />
-                <button
-                  className="remove-movie-btn"
-                  onClick={() => handleRemoveMovie(movie.movie_id)}
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
-          </div>
-          <div className="add-movie-form">
-            <button
-              onClick={() => setShowMoviePopup(true)}
-              className="primary-btn"
-            >
-              Add Movie
-            </button>
-          </div>
         </main>
       )}
     </div>

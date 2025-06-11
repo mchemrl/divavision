@@ -6,18 +6,28 @@ import "./UserPage.css";
 import Navigation from "../components/Navigation";
 import Loader from "../components/Loader";
 
-const MovieCard = ({ title, rating, movie_id, navigate }) => (
-  <div className="movie-card">
-    <div className="movie-title">
-      <span
-        onClick={() => navigate(`/movie/${movie_id}`)}
-        className="movie-link"
-      >
-        {title || "Untitled Movie"}
-      </span>
-    </div>
-    <div className="movie-rating">
-      <Star className="w-4 h-4 mr-1" /> {rating ?? "N/A"}
+const MovieCard = ({ title, rating, movie_id, navigate, poster_link }) => (
+  <div className="movie-cardd">
+    <img
+      src={`https://image.tmdb.org/t/p/w200${poster_link}`}
+      alt={title || "Movie Poster"}
+      className="movie-posterrr"
+      onError={(e) => {
+        e.target.src = "https://via.placeholder.com/200x300";
+      }}
+    />
+    <div className="movie-detailss">
+      <div className="movie-title">
+        <span
+          onClick={() => navigate(`/movie/${movie_id}`)}
+          className="movie-link"
+        >
+          {title || "Untitled Movie"}
+        </span>
+      </div>
+      <div className="movie-ratting">
+        <Star className="w-4 h-4 mr-1" /> {rating ?? "N/A"}
+      </div>
     </div>
   </div>
 );
@@ -83,9 +93,11 @@ const UserPage = () => {
           axios.get(`/profile/${targetId}/stats`),
           axios.get(`/profile/${targetId}/watched`),
           axios.get(`/profile/${targetId}/favorites`),
-          axios.get(`/profile/${targetId}/lists`), axios.get(`/review/`, { params: { user_id: targetId, limit: 10 } }),
+          axios.get(`/profile/${targetId}/lists`),
+          axios.get(`/review/`, { params: { user_id: targetId, limit: 10 } }),
           axios.get(`/profile/${targetId}/followers`),
-          axios.get(`/profile/${targetId}/following`)]);
+          axios.get(`/profile/${targetId}/following`),
+        ]);
 
         setUser(userRes.data || null);
         setStats(statsRes.data || {});
@@ -95,8 +107,8 @@ const UserPage = () => {
             : []
         );
         setFavorites(
-          Array.isArray(favoritesRes.data?.favorites)
-            ? favoritesRes.data.favorites
+          Array.isArray(favoritesRes.data?.favorites?.movies)
+            ? favoritesRes.data.favorites.movies
             : []
         );
         setLists(
@@ -241,6 +253,7 @@ const UserPage = () => {
             rating={movie.avg_user_rating || movie.rating}
             movie_id={movie.movie_id}
             navigate={navigate}
+            poster_link={movie.poster_link}
           />
         ))}
       </div>
@@ -346,11 +359,6 @@ const UserPage = () => {
             </div>
             <div className="profile-stats">
               <Stat label="Watched" value={stats.watched} navigate={navigate} />
-              <Stat
-                label="Favorites"
-                value={stats.favorites}
-                navigate={navigate}
-              />
               <Stat label="Reviews" value={stats.reviews} navigate={navigate} />
               <Stat label="Lists" value={stats.lists} navigate={navigate} />
               <Stat

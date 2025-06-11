@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "../axiosConfig";
-import { Star } from "lucide-react";
+import { Star, Heart } from "lucide-react";
 import Navigation from "../components/Navigation";
 import Loader from "../components/Loader";
 import "./MoviePage.css";
@@ -50,8 +50,10 @@ const MoviePage = () => {
   const [submitMessage, setSubmitMessage] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [editingReviewId, setEditingReviewId] = useState(null);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -61,9 +63,21 @@ const MoviePage = () => {
           axios.get(`/review?movie_id=${movie_id}&limit=50`),
           axios.get("/profile/me"),
         ]);
+        const favRes = await axios.get(
+          `/profile/${profileRes.data.id}/favorites`
+        );
         setMovie(movieRes.data);
         setReviews(reviewRes.data);
         setCurrentUserId(profileRes.data.id);
+        console.log(favRes.data);
+        setIsFavorite(
+          Array.isArray(favRes.data?.favorites?.movies)
+            ? favRes.data.favorites.movies.some(
+                (fav) => fav.movie_id === parseInt(movie_id)
+              )
+            : false
+        );
+
         setLoading(false);
       } catch (err) {
         console.error("Failed to fetch data", err);
@@ -103,6 +117,7 @@ const MoviePage = () => {
       setSubmitMessage("Error submitting review.");
     }
   };
+
   const handleDelete = async (review_id) => {
     try {
       await axios.delete(`http://localhost:5000/review/`, {
@@ -115,13 +130,28 @@ const MoviePage = () => {
     }
   };
 
+  const handleToggleFavorite = async () => {
+    try {
+      if (isFavorite) {
+        // await axios.delete("/list/favorites", { params: { movie_id } });
+        // setIsFavorite(false);
+      } else {
+        await axios.post("/list/favorites", { movie_id: parseInt(movie_id) });
+        setIsFavorite(true);
+      }
+    } catch (err) {
+      console.error("Failed to toggle favorite", err);
+      setError("Failed to update favorites. Please try again.");
+    }
+  };
+
   return (
     <div className="user-page-container">
       <Navigation />
 
       <main className="main-content">
         <button onClick={() => navigate("/discover")} className="back-button">
-          ← Back to browsing
+          ← To Browsing
         </button>
 
         {isLoading ? (
@@ -163,6 +193,12 @@ const MoviePage = () => {
                       {movie.rating.toFixed(1)} (IMDb)
                     </p>
                   </div>
+                  <button
+                    onClick={handleToggleFavorite}
+                    className={`fav-button ${isFavorite ? "favorited" : ""}`}
+                  >
+                    <Heart size={24} />
+                  </button>
                 </div>
               </div>
 
