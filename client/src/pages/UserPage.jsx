@@ -359,11 +359,6 @@ const UserPage = () => {
             </div>
             <div className="profile-stats">
               <Stat label="Watched" value={stats.watched} navigate={navigate} />
-              <Stat
-                label="Favorites"
-                value={stats.favorites}
-                navigate={navigate}
-              />
               <Stat label="Reviews" value={stats.reviews} navigate={navigate} />
               <Stat label="Lists" value={stats.lists} navigate={navigate} />
               <Stat

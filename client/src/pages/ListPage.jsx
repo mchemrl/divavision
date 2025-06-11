@@ -20,10 +20,16 @@ const ListPage = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [loggedInUserId, setLoggedInUserId] = useState(null);
 
   useEffect(() => {
     const fetchList = async () => {
       try {
+        const profileRes = await axios.get("/profile/me");
+        const currentUserId = profileRes.data?.id;
+        if (!currentUserId)
+          throw new Error("Failed to fetch logged-in user ID");
+        setLoggedInUserId(currentUserId);
         setInitialLoading(true);
         const res = await axios.get(`/list/${list_id}`);
         setList(res.data.list);
@@ -85,6 +91,7 @@ const ListPage = () => {
       setLoading(false);
     }
   };
+  const isOwner = list?.user_id === loggedInUserId;
 
   return (
     <div className="listt-page">
@@ -146,18 +153,22 @@ const ListPage = () => {
                 <div className="listt-info">
                   <h1 className="listt-title">{list.title}</h1>
                   <p className="listt-description">{list.description}</p>
-                  <button
-                    onClick={() => setIsEditing(true)}
-                    className="edit-btnn"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => setShowMoviePopup(true)}
-                    className="add-movie-btn"
-                  >
-                    Add Movie
-                  </button>
+                  {isOwner && (
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="edit-btnn"
+                    >
+                      Edit
+                    </button>
+                  )}
+                  {isOwner && (
+                    <button
+                      onClick={() => setShowMoviePopup(true)}
+                      className="add-movie-btn"
+                    >
+                      Add Movie
+                    </button>
+                  )}
                 </div>
               </div>
             )}
