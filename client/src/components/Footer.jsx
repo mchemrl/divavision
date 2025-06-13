@@ -6,14 +6,14 @@ export default function Footer() {
     <section className="footer-area">
       <div className="footer-inner">
         <div className="footer-logo">
-          <span role="img" aria-label="film icon">🎬</span> ReelFeel
+          <span role="img" aria-label="film icon">🎬</span> Divavision
         </div>
         <div className="footer-social">
           <a href="#" aria-label="Instagram"><i className="fab fa-instagram" /></a>
           <a href="#" aria-label="Help"><i className="fas fa-circle-question" /></a>
           <a href="#" aria-label="TikTok"><i className="fab fa-tiktok" /></a>
         </div>
-        <div className="footer-copy">© 2024 ReelFeel. All rights reserved.</div>
+        <div className="footer-copy">© 2025 Divavision. All rights reserved.</div>
       </div>
     </section>
   );

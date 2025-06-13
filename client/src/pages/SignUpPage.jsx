@@ -47,7 +47,7 @@ export default function SignUpPage() {
 
     try {
       await axios.post("/auth/verify", { email, code });
-      navigate("/profile");
+      navigate("/user");
     } catch (err) {
       setError(
         err.response?.data?.error || "An error occurred. Please try again."

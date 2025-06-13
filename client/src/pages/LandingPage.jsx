@@ -20,10 +20,7 @@ import Footer from '../components/Footer';
     <div className="landing-page">
       <nav className="nav">
         <div className="nav-logo">🎬 Divavision</div>
-        <ul className="nav-links">
-          <li><a href="#movies">Movies</a></li>
-          <li><a href="#lists">Lists</a></li>
-        </ul>
+
         <div className="nav-actions">
           <button className="btn-outline" onClick={handleLoginClick}>Login</button>
           <button className="btn-primary" onClick={handleSignUpClick}>Sign Up</button>

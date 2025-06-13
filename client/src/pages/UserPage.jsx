@@ -423,7 +423,8 @@ const UserPage = () => {
                     followers.map((follower) => (
                       <div key={follower.user_id} className="profile-item">
                         <span
-                          onClick={() => navigate(`/user/${follower.user_id}`)}
+                          onClick={() => {navigate(`/user/${follower.user_id}`);
+                          setShowFollowersPopup(false)}}
                         >
                           {follower.username || `User ${follower.user_id}`}
                         </span>
@@ -458,7 +459,8 @@ const UserPage = () => {
                     following.map((followed) => (
                       <div key={followed.id} className="profile-item">
                         <span
-                          onClick={() => navigate(`/user/${followed.user_id}`)}
+                          onClick={() => {navigate(`/user/${followed.user_id}`)
+                          setShowFollowingPopup(false)}}
                         >
                           {followed.username || `User ${followed.user_id}`}
                         </span>
